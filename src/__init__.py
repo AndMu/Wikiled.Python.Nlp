@@ -1,1 +1,1 @@
-name = "wikiled.nlp"
+name = "wikiled-nlp"
