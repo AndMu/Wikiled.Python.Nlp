@@ -1,8 +1,8 @@
 import abc
 
 import numpy as np
-from WikiledNlp.Discovery.SentimentTable import SentimentTable
-from WikiledNlp.Discovery import logger
+from wikilednlp.Discovery.SentimentTable import SentimentTable
+from wikilednlp.Discovery import logger
 
 
 class WordVectorConstructor(object):

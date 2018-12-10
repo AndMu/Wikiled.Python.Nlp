@@ -2,10 +2,10 @@ import unittest
 
 from os import path
 
-from WikiledNlp.Discovery import seeds
-from WikiledNlp.Discovery.LexiconDiscover import LexiconDiscover
-from WikiledNlp.embeddings.VectorManagers import Word2VecManager
-from WikiledNlp.utilities import Constants
+from wikilednlp.Discovery import seeds
+from wikilednlp.Discovery.LexiconDiscover import LexiconDiscover
+from wikilednlp.embeddings.VectorManagers import Word2VecManager
+from wikilednlp.utilities import Constants
 
 
 class LexiconDiscoverTests(unittest.TestCase):

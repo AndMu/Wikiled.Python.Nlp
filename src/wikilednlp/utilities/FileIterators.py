@@ -9,10 +9,10 @@ from pathlib2 import Path
 import numpy as np
 from os import path, walk, makedirs
 
-from WikiledNlp.utilities import Constants, logger
+from wikilednlp.utilities import Constants, logger
 import io
 
-from WikiledNlp.utilities.NumpyHelper import NumpyDynamic
+from wikilednlp.utilities.NumpyHelper import NumpyDynamic
 
 
 class FileIterator(object):

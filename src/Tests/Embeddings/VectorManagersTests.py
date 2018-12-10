@@ -2,9 +2,9 @@ import unittest
 
 from os import path
 
-from WikiledNlp.embeddings.Embedding import MainWord2VecEmbedding
-from WikiledNlp.embeddings.VectorManagers import Word2VecManager, EmbeddingManager
-from WikiledNlp.utilities import Constants
+from wikilednlp.embeddings.Embedding import MainWord2VecEmbedding
+from wikilednlp.embeddings.VectorManagers import Word2VecManager, EmbeddingManager
+from wikilednlp.utilities import Constants
 
 
 class Word2VecManagerTests(unittest.TestCase):

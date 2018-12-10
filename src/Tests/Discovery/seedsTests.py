@@ -1,6 +1,6 @@
 import unittest
 
-from WikiledNlp.Discovery import seeds
+from wikilednlp.Discovery import seeds
 
 
 class SentimentTableTests(unittest.TestCase):

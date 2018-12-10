@@ -4,10 +4,10 @@ from os import path
 
 from nltk import TreebankWordTokenizer
 
-from WikiledNlp.embeddings.VectorSources import EmbeddingVecSource
-from WikiledNlp.utilities import Constants
-from WikiledNlp.embeddings.VectorManagers import Word2VecManager
-from WikiledNlp.utilities.Lexicon import Lexicon
+from wikilednlp.embeddings.VectorSources import EmbeddingVecSource
+from wikilednlp.utilities import Constants
+from wikilednlp.embeddings.VectorManagers import Word2VecManager
+from wikilednlp.utilities.Lexicon import Lexicon
 
 
 class EmbeddingVecSourceTests(unittest.TestCase):

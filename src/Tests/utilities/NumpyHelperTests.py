@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from WikiledNlp.utilities.NumpyHelper import NumpyDynamic
+from wikilednlp.utilities.NumpyHelper import NumpyDynamic
 
 
 class NumpyDynamicTests(unittest.TestCase):

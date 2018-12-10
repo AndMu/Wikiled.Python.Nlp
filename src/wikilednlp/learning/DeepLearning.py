@@ -14,9 +14,9 @@ from pathlib2 import Path
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils import check_array
 
-import WikiledNlp.utilities.Constants as Constants
-from WikiledNlp.learning import logger
-from WikiledNlp.utilities.Utilities import Utilities
+import wikilednlp.utilities.Constants as Constants
+from wikilednlp.learning import logger
+from wikilednlp.utilities.Utilities import Utilities
 
 seed = 7
 np.random.seed(seed)

@@ -4,9 +4,9 @@ from random import shuffle
 import gensim
 from pathlib2 import Path
 
-from WikiledNlp.utilities import Constants
-from WikiledNlp.utilities.DocumentExtractors import SingleFileLineSentence, MultiFileLineSentence, MultiFileLineDocument
-from WikiledNlp.embeddings import logger
+from wikilednlp.utilities import Constants
+from wikilednlp.utilities.DocumentExtractors import SingleFileLineSentence, MultiFileLineSentence, MultiFileLineDocument
+from wikilednlp.embeddings import logger
 
 
 class Word2VecBuilder:

@@ -1,8 +1,8 @@
 import unittest
 
-from WikiledNlp.Discovery.SentimentTable import SentimentTable
-from WikiledNlp.Discovery.SentimentTable import SentimentValue
-from WikiledNlp.utilities.Lexicon import LexiconHelper
+from wikilednlp.Discovery.SentimentTable import SentimentTable
+from wikilednlp.Discovery.SentimentTable import SentimentValue
+from wikilednlp.utilities.Lexicon import LexiconHelper
 
 
 class SentimentTableTests(unittest.TestCase):

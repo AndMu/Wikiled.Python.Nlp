@@ -8,7 +8,7 @@ from sklearn import metrics
 import numpy as np
 from sklearn.metrics import roc_auc_score
 
-from WikiledNlp.utilities import logger
+from wikilednlp.utilities import logger
 
 
 class Utilities(object):

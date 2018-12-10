@@ -2,12 +2,12 @@ import abc
 
 from nltk import PorterStemmer
 
-from WikiledNlp.learning import logger
+from wikilednlp.learning import logger
 from os import path
 import numpy as np
 import gensim
 
-from WikiledNlp.utilities.TextHelper import TextHelper
+from wikilednlp.utilities.TextHelper import TextHelper
 
 
 class BaseVecManager(object):

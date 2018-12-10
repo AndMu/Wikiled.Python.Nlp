@@ -6,18 +6,18 @@ from ddt import ddt, data, unpack
 from mock import patch
 from nltk import TreebankWordTokenizer
 
-from WikiledNlp.embeddings.VectorManagers import Word2VecManager
-from WikiledNlp.utilities import Constants
-from WikiledNlp.utilities.FileIterators import ClassDataIterator, SemEvalDataIterator
-from WikiledNlp.utilities.Lexicon import Lexicon
-from WikiledNlp.utilities.Utilities import ClassConvertor
-from WikiledNlp.embeddings.VectorSources import EmbeddingVecSource
+from wikilednlp.embeddings.VectorManagers import Word2VecManager
+from wikilednlp.utilities import Constants
+from wikilednlp.utilities.FileIterators import ClassDataIterator, SemEvalDataIterator
+from wikilednlp.utilities.Lexicon import Lexicon
+from wikilednlp.utilities.Utilities import ClassConvertor
+from wikilednlp.embeddings.VectorSources import EmbeddingVecSource
 
 
 class DataIteratorTests(unittest.TestCase):
 
     def setUp(self):
-        with patch('WikiledNlp.embeddings.VectorSources.EmbeddingVecSource') as mock:
+        with patch('wikilednlp.embeddings.VectorSources.EmbeddingVecSource') as mock:
             instance = mock.instance
             instance.word2vec.name = 'name'
             self.iterator = ClassDataIterator(instance, 'root', 'test')

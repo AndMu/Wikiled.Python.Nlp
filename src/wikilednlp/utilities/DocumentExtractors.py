@@ -4,7 +4,7 @@ from io import open
 
 from gensim import utils
 from gensim.models.doc2vec import TaggedDocument
-from WikiledNlp.utilities import logger, Constants
+from wikilednlp.utilities import logger, Constants
 
 
 class SingleFileLineSentence(object):

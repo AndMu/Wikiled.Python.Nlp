@@ -1,7 +1,7 @@
 import unittest
 
 import numpy as np
-from WikiledNlp.utilities.Utilities import Utilities, ClassConvertor
+from wikilednlp.utilities.Utilities import Utilities, ClassConvertor
 
 
 class UtilsTests(unittest.TestCase):

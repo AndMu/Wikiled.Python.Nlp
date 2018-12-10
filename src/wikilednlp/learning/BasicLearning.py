@@ -4,8 +4,8 @@ import sklearn
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn import svm
 
-from WikiledNlp.utilities.Utilities import Utilities
-from WikiledNlp.learning import logger
+from wikilednlp.utilities.Utilities import Utilities
+from wikilednlp.learning import logger
 
 
 class BaseClassifier(object):

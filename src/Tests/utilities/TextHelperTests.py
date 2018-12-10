@@ -2,7 +2,7 @@ import unittest
 
 from ddt import data, unpack, ddt
 
-from WikiledNlp.utilities.TextHelper import TextHelper
+from wikilednlp.utilities.TextHelper import TextHelper
 
 
 @ddt

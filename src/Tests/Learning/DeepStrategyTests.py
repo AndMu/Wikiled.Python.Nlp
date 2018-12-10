@@ -4,13 +4,13 @@ from keras.preprocessing import sequence
 from nltk import TreebankWordTokenizer
 from os import path
 
-from WikiledNlp.embeddings.VectorSources import EmbeddingVecSource
-from WikiledNlp.utilities.Utilities import ClassConvertor
-from WikiledNlp.embeddings.VectorManagers import Word2VecManager
-from WikiledNlp.learning.DeepLearning import BaselineLSTM, WeightsLSTM
-from WikiledNlp.utilities import Constants
-from WikiledNlp.utilities.DataLoaders import ImdbDataLoader
-from WikiledNlp.utilities.Lexicon import Lexicon
+from wikilednlp.embeddings.VectorSources import EmbeddingVecSource
+from wikilednlp.utilities.Utilities import ClassConvertor
+from wikilednlp.embeddings.VectorManagers import Word2VecManager
+from wikilednlp.learning.DeepLearning import BaselineLSTM, WeightsLSTM
+from wikilednlp.utilities import Constants
+from wikilednlp.utilities.DataLoaders import ImdbDataLoader
+from wikilednlp.utilities.Lexicon import Lexicon
 
 
 class WeightsLSTMTests(unittest.TestCase):

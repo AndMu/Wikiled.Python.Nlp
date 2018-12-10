@@ -3,9 +3,9 @@ from os import path
 
 from nltk import TreebankWordTokenizer
 
-from WikiledNlp.embeddings.VectorManagers import Word2VecManager
-from WikiledNlp.utilities import Constants
-from WikiledNlp.utilities.Lexicon import Lexicon
+from wikilednlp.embeddings.VectorManagers import Word2VecManager
+from wikilednlp.utilities import Constants
+from wikilednlp.utilities.Lexicon import Lexicon
 
 
 class LexiconTests(unittest.TestCase):

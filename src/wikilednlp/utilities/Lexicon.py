@@ -3,9 +3,9 @@ from os import path
 from nltk.corpus import stopwords
 import re
 
-from WikiledNlp.utilities import Constants
-from WikiledNlp.utilities.TextHelper import TextHelper
-from WikiledNlp.utilities.Utilities import Utilities
+from wikilednlp.utilities import Constants
+from wikilednlp.utilities.TextHelper import TextHelper
+from wikilednlp.utilities.Utilities import Utilities
 nltk.download('stopwords')
 nltk.download('punkt')
 

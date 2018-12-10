@@ -1,6 +1,6 @@
 import numpy as np
 
-from WikiledNlp.utilities import logger
+from wikilednlp.utilities import logger
 
 
 class EmbeddingVecSource(object):

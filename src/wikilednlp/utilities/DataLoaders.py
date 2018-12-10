@@ -2,7 +2,7 @@ import abc
 
 import logging
 
-from WikiledNlp.utilities.FileIterators import ClassDataIterator, SingeDataIterator, SemEvalDataIterator
+from wikilednlp.utilities.FileIterators import ClassDataIterator, SingeDataIterator, SemEvalDataIterator
 logger = logging.getLogger(__name__)
 
 

@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from WikiledNlp.Discovery import logger
+from wikilednlp.Discovery import logger
 
 
 class SentimentTable(object):
