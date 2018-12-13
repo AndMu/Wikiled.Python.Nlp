@@ -22,7 +22,7 @@ class Word2VecBuilder:
 
         source_path = Path(source)
         if not source_path.exists():
-            raise ValueError("Path not found " + source_path)
+            raise ValueError("Path not found " + str(source_path))
         if source_path.is_file():
             sentences = SingleFileLineSentence(self.lexicon, source)
         else:
