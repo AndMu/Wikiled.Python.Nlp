@@ -24,7 +24,7 @@ class Embedding(object):
 
         self.word_index = {}
         self.index_word = {}
-        index = 1
+        index = Constants.EMBEDDING_START_INDEX
         for word in self.vocabulary:
             self.word_index[word] = index
             self.index_word[index] = word

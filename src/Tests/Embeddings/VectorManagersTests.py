@@ -11,13 +11,18 @@ class Word2VecManagerTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.word2vec = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), dict_size=10000)
+        Constants.EMBEDDING_START_INDEX = 0
+        cls.word2vec_zero = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), vocab_size=10000)
+        Constants.EMBEDDING_START_INDEX = 1
+        cls.word2vec = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), vocab_size=10000)
 
     def test_construct(self):
         self.assertEquals(10000, self.word2vec.total_words)
         self.assertEquals(10000, len(self.word2vec.word_vectors))
         self.assertEquals("SemEval_min2", self.word2vec.name)
         self.assertEquals(500, self.word2vec.vector_size)
+        self.assertEquals(0, self.word2vec.embedding_matrix[0][0])
+        self.assertNotEquals(0, self.word2vec_zero.embedding_matrix[0][0])
 
     def construct_dataset(self):
         result = self.word2vec.construct_dataset(['good', 'bad'])

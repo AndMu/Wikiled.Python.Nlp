@@ -31,7 +31,7 @@ class SemEvalDataIteratorTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         lexicon = Lexicon(TreebankWordTokenizer())
-        word2vec = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/Imdb_min2.bin'), dict_size=10000)
+        word2vec = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/Imdb_min2.bin'), vocab_size=10000)
         cls.source = EmbeddingVecSource(lexicon, word2vec)
 
     @data([2, 8047, 5690], [3, 14885, 5690])

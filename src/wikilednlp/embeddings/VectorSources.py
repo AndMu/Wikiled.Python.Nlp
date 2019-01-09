@@ -1,6 +1,6 @@
 import numpy as np
 
-from wikilednlp.utilities import logger
+from wikilednlp.utilities import logger, Constants
 
 
 class EmbeddingVecSource(object):
@@ -22,7 +22,7 @@ class EmbeddingVecSource(object):
 
     def get_vector_from_tokens(self, tokens):
         data = list(self.word2vec.word_index[word] for word in tokens if word in self.word2vec.word_index)
-        if 0 in data:
+        if Constants.EMBEDDING_START_INDEX == 1 and 0 in data:
             raise ValueError("Can't have zero")
         data = np.array(data)
         if len(data) == 0:

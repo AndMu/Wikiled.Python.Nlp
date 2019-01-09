@@ -66,7 +66,7 @@ class LexiconHelper(object):
         result = {}
         for name in names:
             lexicon = LexiconHelper.load_lexicon(name, remove_neutral)
-            for word, value in lexicon.iteritems():
+            for word, value in lexicon.items():
                 if word in result:
                     value = (result[word] + value) / 2
                 result[word] = value

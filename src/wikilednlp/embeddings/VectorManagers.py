@@ -3,6 +3,7 @@ import abc
 from nltk import PorterStemmer
 
 from wikilednlp.learning import logger
+from wikilednlp.utilities import Constants
 from os import path
 import numpy as np
 import gensim
@@ -25,7 +26,7 @@ class BaseVecManager(object):
         self.emoticons = []
         self.hash_tags = []
         # prepare embedding matrix
-        self.embedding_matrix = np.zeros((total_words + 1, vector_size))
+        self.embedding_matrix = np.zeros((total_words + Constants.EMBEDDING_START_INDEX, vector_size))
 
         for word in word_vector_table.keys():
             embedding_vector = word_vector_table.get(word)
@@ -66,14 +67,14 @@ class BaseVecManager(object):
 
 class Word2VecManager(BaseVecManager):
 
-    def __init__(self, file_name, is_binary=False, dict_size=10000):
+    def __init__(self, file_name, is_binary=False, vocab_size=10000):
         name = path.splitext(path.split(file_name)[-1])[0]
         self.is_binary = is_binary
         w2vModel = self.construct(file_name)
         logger.info('Sorting words')
-        sorted_list = sorted(w2vModel.wv.vocab.items(), key=lambda t: t[1].count, reverse=True)[0:dict_size]
+        sorted_list = sorted(w2vModel.wv.vocab.items(), key=lambda t: t[1].count, reverse=True)[0:vocab_size]
         total_words = len(sorted_list)
-        index = 1
+        index = Constants.EMBEDDING_START_INDEX
         word_index = {}
         index_word = {}
         word_vector_table = {}

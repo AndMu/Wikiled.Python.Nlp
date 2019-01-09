@@ -1,5 +1,4 @@
 import unittest
-
 from os import path
 
 from wikilednlp.Discovery import seeds
@@ -8,10 +7,11 @@ from wikilednlp.embeddings.VectorManagers import Word2VecManager
 from wikilednlp.utilities import Constants
 
 
+
 class LexiconDiscoverTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.word2vec = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), top=100000)
+        cls.word2vec = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), vocab_size=100000)
 
     def setUp(self):
         self.discover = LexiconDiscover(self.word2vec, seeds.turney_seeds)
