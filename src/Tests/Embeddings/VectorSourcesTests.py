@@ -14,7 +14,7 @@ class EmbeddingVecSourceTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.word2vec = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), top=10000)
+        cls.word2vec = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), dict_size=10000)
         cls.lexicon = Lexicon(TreebankWordTokenizer())
 
     def setUp(self):

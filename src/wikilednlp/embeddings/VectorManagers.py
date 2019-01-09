@@ -66,12 +66,12 @@ class BaseVecManager(object):
 
 class Word2VecManager(BaseVecManager):
 
-    def __init__(self, file_name, is_binary=False, top=10000):
+    def __init__(self, file_name, is_binary=False, dict_size=10000):
         name = path.splitext(path.split(file_name)[-1])[0]
         self.is_binary = is_binary
         w2vModel = self.construct(file_name)
         logger.info('Sorting words')
-        sorted_list = sorted(w2vModel.wv.vocab.items(), key=lambda t: t[1].count, reverse=True)[0:top]
+        sorted_list = sorted(w2vModel.wv.vocab.items(), key=lambda t: t[1].count, reverse=True)[0:dict_size]
         total_words = len(sorted_list)
         index = 1
         word_index = {}

@@ -18,7 +18,7 @@ class WeightsLSTMTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         lexicon = Lexicon(TreebankWordTokenizer())
-        word2vec = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), top=10000)
+        word2vec = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), dict_size=10000)
         source = EmbeddingVecSource(lexicon, word2vec)
         class_convertor = ClassConvertor("Binary", {"0": 0, "1": 1})
         cls.loader = ImdbDataLoader(source, class_convertor, root=path.join(Constants.DATASETS, 'test'))

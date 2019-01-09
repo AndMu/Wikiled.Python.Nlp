@@ -1,0 +1,10 @@
+{
+    "python.pythonPath": "C:\\ProgramData\\Anaconda3\\envs\\cntk-py36\\python.exe",
+    "python.unitTest.nosetestArgs": [
+        "."
+    ],
+    "python.unitTest.pyTestEnabled": true,
+    "python.unitTest.unittestEnabled": true,
+    "python.unitTest.nosetestsEnabled": true,
+    "python.linting.pylintEnabled": true
+}

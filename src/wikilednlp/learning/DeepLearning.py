@@ -27,12 +27,12 @@ class BaseDeepStrategy(object):
 
     counter = 0
 
-    def __init__(self, project_name, sub_project, time_steps):
+    def __init__(self, project_name, sub_project, doc_size):
         self.counter = BaseDeepStrategy.counter
         BaseDeepStrategy.counter += 1
-        self.time_steps = time_steps
+        self.doc_size = doc_size
         self.project_name = project_name + "_" + sub_project
-        logger.info('%s with timestamp %i', project_name, time_steps)
+        logger.info('%s with doc_size %i', project_name, doc_size)
         self.project_path = path.join(Constants.TEMP, 'Deep', project_name)
         self.epochs_number = 20
         self.model = None
@@ -41,7 +41,7 @@ class BaseDeepStrategy(object):
         vectors = self.loader.parser.word2vec.embedding_matrix
         model.add(Embedding(input_dim=vectors.shape[0],
                           output_dim=vectors.shape[1],
-                          input_length=self.time_steps,
+                          input_length=self.doc_size,
                           weights=[vectors],
                           trainable=False))
 
@@ -65,7 +65,7 @@ class BaseDeepStrategy(object):
                 self.model.compile(loss="categorical_crossentropy", optimizer=RMSprop(), metrics=["accuracy"])
 
     def get_file_name(self, name):
-        file_path = path.join(self.project_path, 'weights', name, str(self.time_steps) + '_keras-lstm.h5')
+        file_path = path.join(self.project_path, 'weights', name, str(self.doc_size) + '_keras-lstm.h5')
         weights = path.dirname(file_path)
         if not Path(weights).exists():
             makedirs(weights)
@@ -147,12 +147,12 @@ class BaseDeepStrategy(object):
 
 class ConvNetAlgorithm(BaseDeepStrategy):
 
-    def __init__(self, loader, project_name, time_steps, vocab_size=10000):
-        self.time_steps = time_steps
+    def __init__(self, loader, project_name, doc_size, vocab_size=10000):
+        self.doc_size = doc_size
         self.vocab_size = vocab_size
         self.loader = loader
         self.word_vector_size = self.loader.parser.word2vec.vector_size
-        super(ConvNetAlgorithm, self).__init__(project_name, self.get_name(), time_steps)
+        super(ConvNetAlgorithm, self).__init__(project_name, self.get_name(), doc_size)
 
     def get_name(self):
         return self.loader.parser.word2vec.name + '_OneDimensional'
@@ -167,7 +167,7 @@ class ConvNetAlgorithm(BaseDeepStrategy):
         n_fm = 500
         # kernel size of convolutional layer
         kernel_size = 8
-        conv_input_height = self.time_steps
+        conv_input_height = self.doc_size
         conv_input_width = self.word_vector_size
 
         logger.info('conv_input_height: %s conv_input_width: %s', conv_input_height, conv_input_width)
@@ -204,7 +204,7 @@ class ConvNetAlgorithm(BaseDeepStrategy):
         self.model.summary()
 
     def copy(self):
-        copy_instance = ConvNetAlgorithm(self.loader, self.project_name, self.time_steps, self.vocab_size)
+        copy_instance = ConvNetAlgorithm(self.loader, self.project_name, self.doc_size, self.vocab_size)
         return copy_instance
 
     def __copy__(self):
@@ -217,7 +217,7 @@ class ConvNetAlgorithm(BaseDeepStrategy):
 class BaselineLSTM(ConvNetAlgorithm):
 
     def get_name(self):
-        return self.loader.parser.word2vec.name + '_LTSM_' + str(self.time_steps)
+        return self.loader.parser.word2vec.name + '_LTSM_' + str(self.doc_size)
 
     @abc.abstractmethod
     def construct_ltsm_model(self, model):
@@ -232,20 +232,20 @@ class BaselineLSTM(ConvNetAlgorithm):
 
 class WeightsLSTM(BaselineLSTM):
 
-    def __init__(self, loader, project_name, time_steps, vocab_size=10000, lstm=150):
+    def __init__(self, loader, project_name, doc_size, vocab_size=10000, lstm=150):
         self.lstm = lstm
-        super(WeightsLSTM, self).__init__(loader, project_name, time_steps, vocab_size)
+        super(WeightsLSTM, self).__init__(loader, project_name, doc_size, vocab_size)
 
     def get_name(self):
         vector_size = self.loader.parser.word2vec.embedding_matrix.shape[1]
-        return self.loader.parser.word2vec.name + '_LTSM_Weights_' + str(self.time_steps) + "_" + str(vector_size)
+        return self.loader.parser.word2vec.name + '_LTSM_Weights_' + str(self.doc_size) + "_" + str(vector_size)
 
     def construct_ltsm_model(self, model):
         self.add_embeddings(model)
         model.add(LSTM(self.lstm, return_sequences=False))
 
     def copy(self):
-        copy_instance = WeightsLSTM(self.loader, self.project_name, self.time_steps, self.vocab_size, self.lstm)
+        copy_instance = WeightsLSTM(self.loader, self.project_name, self.doc_size, self.vocab_size, self.lstm)
         return copy_instance
 
     def __copy__(self):

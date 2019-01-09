@@ -11,7 +11,7 @@ class Word2VecManagerTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.word2vec = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), top=10000)
+        cls.word2vec = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), dict_size=10000)
 
     def test_construct(self):
         self.assertEquals(10000, self.word2vec.total_words)
