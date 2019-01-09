@@ -147,9 +147,9 @@ class BaseDeepStrategy(object):
 
 class ConvNetAlgorithm(BaseDeepStrategy):
 
-    def __init__(self, loader, project_name, time_steps, top_words=10000):
+    def __init__(self, loader, project_name, time_steps, vocab_size=10000):
         self.time_steps = time_steps
-        self.top_words = top_words
+        self.vocab_size = vocab_size
         self.loader = loader
         self.word_vector_size = self.loader.parser.word2vec.vector_size
         super(ConvNetAlgorithm, self).__init__(project_name, self.get_name(), time_steps)
@@ -204,7 +204,7 @@ class ConvNetAlgorithm(BaseDeepStrategy):
         self.model.summary()
 
     def copy(self):
-        copy_instance = ConvNetAlgorithm(self.loader, self.project_name, self.time_steps, self.top_words)
+        copy_instance = ConvNetAlgorithm(self.loader, self.project_name, self.time_steps, self.vocab_size)
         return copy_instance
 
     def __copy__(self):
@@ -232,9 +232,9 @@ class BaselineLSTM(ConvNetAlgorithm):
 
 class WeightsLSTM(BaselineLSTM):
 
-    def __init__(self, loader, project_name, time_steps, top_words=10000, lstm=150):
+    def __init__(self, loader, project_name, time_steps, vocab_size=10000, lstm=150):
         self.lstm = lstm
-        super(WeightsLSTM, self).__init__(loader, project_name, time_steps, top_words)
+        super(WeightsLSTM, self).__init__(loader, project_name, time_steps, vocab_size)
 
     def get_name(self):
         vector_size = self.loader.parser.word2vec.embedding_matrix.shape[1]
@@ -245,7 +245,7 @@ class WeightsLSTM(BaselineLSTM):
         model.add(LSTM(self.lstm, return_sequences=False))
 
     def copy(self):
-        copy_instance = WeightsLSTM(self.loader, self.project_name, self.time_steps, self.top_words, self.lstm)
+        copy_instance = WeightsLSTM(self.loader, self.project_name, self.time_steps, self.vocab_size, self.lstm)
         return copy_instance
 
     def __copy__(self):
