@@ -1,5 +1,6 @@
 import unittest
 
+import cntk
 from keras.preprocessing import sequence
 from nltk import TreebankWordTokenizer
 from os import path
@@ -7,7 +8,7 @@ from os import path
 from wikilednlp.embeddings.VectorSources import EmbeddingVecSource
 from wikilednlp.utilities.Utilities import ClassConvertor
 from wikilednlp.embeddings.VectorManagers import Word2VecManager
-from wikilednlp.learning.DeepLearning import BaselineLSTM, WeightsLSTM
+from wikilednlp.learning.DeepLearning import CnnSentiment
 from wikilednlp.utilities import Constants
 from wikilednlp.utilities.DataLoaders import ImdbDataLoader
 from wikilednlp.utilities.Lexicon import Lexicon
@@ -25,12 +26,12 @@ class WeightsLSTMTests(unittest.TestCase):
         pass
 
     def test_acceptance(self):
-        first = WeightsLSTM(self.loader, 'AcceptanceTest', 100)
+        first = CnnSentiment(self.loader, 'AcceptanceTest', 500, vocab_size=10000)
         name, train_x, train_y = self.loader.get_data('train', delete=True)
-        train_x = sequence.pad_sequences(train_x, maxlen=100)
+        train_x = sequence.pad_sequences(train_x, maxlen=500)
         first.fit(train_x, train_y)
         name, test_x, test_y = self.loader.get_data('test', delete=True)
-        test_x = sequence.pad_sequences(test_x, maxlen=100)
+        test_x = sequence.pad_sequences(test_x, maxlen=500)
         y = first.predict(test_x)
         self.assertEquals(20, len(y))
         self.assertGreater(sum(y > 0.5), 0)

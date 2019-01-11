@@ -6,6 +6,7 @@ from keras import backend as k, Input, Model
 from keras import callbacks
 from keras.layers import Embedding, Dropout, Dense, np, Activation, Conv1D, MaxPooling1D, GlobalMaxPooling1D
 from keras.models import Sequential
+from keras_preprocessing import sequence
 from pathlib2 import Path
 from sklearn.utils import check_array
 
@@ -32,8 +33,12 @@ class BaseDeepStrategy(object):
         self.epochs_number = 20
         self.model = None
         self.early_stop = None
+        self.output_drop_out = 0.5
+        self.total_classes = self.loader.convertor.total_classes()
 
     def get_embeddings(self):
+
+        logger.info('get_embeddings')
         vectors = self.loader.parser.word2vec.embedding_matrix
         embedding_layer = Embedding(vectors.shape[0],
                                     vectors.shape[1],
@@ -43,10 +48,10 @@ class BaseDeepStrategy(object):
         return embedding_layer
 
     def add_output(self, model):
-        model.add(Dropout(0.5))
-        total_classes = self.loader.convertor.total_classes()
-        model.add(Dense(total_classes))
-        model.add(Activation('softmax'))
+        if self.output_drop_out is not None:
+            model = Dropout(self.output_drop_out)(model)
+        output = Dense(self.total_classes, activation='softmax', name='Main Output')(model)
+        return output
 
     def init_mode(self):
         if not hasattr(self, 'model') or self.model is None:
@@ -84,24 +89,24 @@ class BaseDeepStrategy(object):
     def test(self, test_x, test_y):
         logger.info('Testing with %i records', len(test_x))
         self.init_mode()
+        test_x = sequence.pad_sequences(test_x, maxlen=self.max_length)
         loss, acc = self.model.evaluate(test_x, test_y, Constants.TESTING_BATCH)
         logger.info('Test loss / Test accuracy = {:.4f} / {:.4f}'.format(loss, acc))
 
     def predict_proba(self, test_x):
         logger.info('Predict with %i records', len(test_x))
-        self.init_mode()
-        y = self.model.predict(test_x, Constants.TESTING_BATCH)
+        test_x = sequence.pad_sequences(test_x, maxlen=self.max_length)
+        y = self.model.predict(test_x, batch_size=Constants.TESTING_BATCH, verbose=1)
         return y
 
     def predict(self, test_x):
         logger.info('Predict with %i records', len(test_x))
-        y_prob = self.predict_proba()
+        y_prob = self.predict_proba(test_x)
         return y_prob.argmax(axis=-1)
 
     def test_predict(self, test_x, test_y):
         logger.info('Test predict_proba with %i records', len(test_x))
-        self.init_mode()
-        result_y_prob = self.model.predict(test_x, batch_size=Constants.TESTING_BATCH, verbose=1)
+        result_y_prob = self.predict_proba(test_x)
         result_y = Utilities.make_single_dimension(result_y_prob)
         result_y_prob_single = self.loader.convertor.make_single(result_y_prob)
 
@@ -116,13 +121,15 @@ class BaseDeepStrategy(object):
 
     def compile(self):
         self.model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc'])
-        self.model.summary()
 
     def fit(self, train_x, train_y):
         logger.info('Training with %i records', len(train_x))
         self.init_mode()
         Utilities.count_occurences(train_y)
         train_x, train_y = Utilities.unison_shuffled_copies(train_x, train_y)
+        train_x = sequence.pad_sequences(train_x, maxlen=self.max_length)
+        if len(train_y.shape) == 1:
+            train_y = Utilities.make_dual(train_y, self.total_classes)
         cbks = None
         if self.early_stop is not None:
             cbks = [callbacks.EarlyStopping(monitor='val_loss', patience=self.early_stop)]
@@ -140,18 +147,14 @@ class CnnSentiment(BaseDeepStrategy):
         super(CnnSentiment, self).__init__(project_name, self.get_name(), max_length)
 
     def get_name(self):
-        return self.loader.parser.word2vec.name + '_OneDimensional'
+        return self.loader.parser.word2vec.name + '_CnnSentiment'
 
     def construct_model(self):
-
-        if not self.loader.convertor.is_binary():
-            raise NotImplemented("This model support dual data only")
 
         k.set_image_data_format('channels_first')
 
         sequence_input = Input(shape=(self.max_length,), dtype='int32')
-        embedding_layer = self.get_embeddings()
-        embedded_sequences = embedding_layer(sequence_input)
+        embedded_sequences = self.get_embeddings()(sequence_input)
         x = Conv1D(128, 5, activation='relu')(embedded_sequences)
         x = MaxPooling1D(5)(x)
         x = Conv1D(128, 5, activation='relu')(x)
@@ -160,7 +163,7 @@ class CnnSentiment(BaseDeepStrategy):
         x = GlobalMaxPooling1D()(x)
         x = Dense(128, activation='relu')(x)
 
-        preds = Dense(2, activation='softmax')(x)
+        preds = self.add_output(x)
         model = Model(sequence_input, preds)
 
         # Inner Product layer (as in regular neural network, but without non-linear activation function)
