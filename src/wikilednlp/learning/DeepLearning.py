@@ -4,7 +4,8 @@ from os import path, makedirs
 from keras.initializers import Constant
 from keras import backend as k, Input, Model
 from keras import callbacks
-from keras.layers import Embedding, Dropout, Dense, np, Activation, Conv1D, MaxPooling1D, GlobalMaxPooling1D, LSTM
+from keras.layers import Embedding, Dropout, Dense, np, Activation, Conv1D, MaxPooling1D, GlobalMaxPooling1D, LSTM, \
+    Bidirectional
 from keras.models import Sequential
 from keras_preprocessing import sequence
 from pathlib2 import Path
@@ -172,14 +173,31 @@ class CnnSentiment(BaseDeepStrategy):
 
 class LSTMSentiment(CnnSentiment):
 
+    def __init__(self, loader, project_name, max_length, vocab_size=10000, lstm_size=100):
+        self.lstm_size = lstm_size
+        super(LSTMSentiment, self).__init__(loader, project_name, max_length, vocab_size)
+
     def get_name(self):
-        return self.loader.parser.word2vec.name + '_LTSM_' + str(self.max_length)
+        return '{}_LSTM_{}_{}'.format(self.loader.parser.word2vec.name, self.max_length, self.lstm_size)
 
     def construct_model(self):
-        model = Sequential()
-        model.add(self.get_embeddings())
-        model.add(LSTM(400, return_sequences=False))
-        model.add(Dropout(self.output_drop_out))
-        model.add(Dense(self.total_classes, activation='softmax', name='Main Output'))
+        sequence_input = Input(shape=(self.max_length,), dtype='int32')
+        embedded_sequences = self.get_embeddings()(sequence_input)
+        x = LSTM(self.lstm_size, return_sequences=False)(embedded_sequences)
+        preds = self.add_output(x)
+        model = Model(sequence_input, preds)
         return model
 
+
+class BidiLTSMSentiment(CnnSentiment):
+
+    def get_name(self):
+        return '{}_ENCODER_{}_{}'.format(self.loader.parser.word2vec.name, self.max_length, self.lstm_size)
+
+    def construct_model(self):
+        sequence_input = Input(shape=(self.max_length,), dtype='int32')
+        embedded_sequences = self.get_embeddings()(sequence_input)
+        x = Bidirectional(LSTM(self.lstm_size))(embedded_sequences)
+        preds = self.add_output(x)
+        model = Model(sequence_input, preds)
+        return model
