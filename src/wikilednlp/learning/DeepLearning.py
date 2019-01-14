@@ -4,7 +4,7 @@ from os import path, makedirs
 from keras.initializers import Constant
 from keras import backend as k, Input, Model
 from keras import callbacks
-from keras.layers import Embedding, Dropout, Dense, np, Activation, Conv1D, MaxPooling1D, GlobalMaxPooling1D
+from keras.layers import Embedding, Dropout, Dense, np, Activation, Conv1D, MaxPooling1D, GlobalMaxPooling1D, LSTM
 from keras.models import Sequential
 from keras_preprocessing import sequence
 from pathlib2 import Path
@@ -170,18 +170,16 @@ class CnnSentiment(BaseDeepStrategy):
         return model
 
 
-class BaselineLSTM(CnnSentiment):
+class LSTMSentiment(CnnSentiment):
 
     def get_name(self):
         return self.loader.parser.word2vec.name + '_LTSM_' + str(self.max_length)
 
-    @abc.abstractmethod
-    def construct_ltsm_model(self, model):
-        return None
-
     def construct_model(self):
         model = Sequential()
-        self.construct_ltsm_model(model)
-        self.add_output(model)
+        model.add(self.get_embeddings())
+        model.add(LSTM(400, return_sequences=False))
+        model.add(Dropout(self.output_drop_out))
+        model.add(Dense(self.total_classes, activation='softmax', name='Main Output'))
         return model
 
