@@ -113,9 +113,9 @@ class ClassDataIterator(DataIterator):
         neg_files = FileIterator(self.source, path.join(self.data_path, 'neg'))
 
         for name, sentence_id, vector in pos_files:
-            yield 1, sentence_id, name, vector
+            yield 1, name, sentence_id, vector
         for vector, sentence_id, name in neg_files:
-            yield 0, sentence_id, name, vector
+            yield 0, name, sentence_id, vector
 
 
 class SingeDataIterator(DataIterator):
