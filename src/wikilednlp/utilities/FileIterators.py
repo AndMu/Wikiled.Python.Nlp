@@ -26,8 +26,11 @@ class FileIterator(object):
         for (root, dir_names, files) in walk(self.data_path):
             for name in files:
                 file_name = path.join(root, name)
-                data = self.source.get_vector(file_name)
-                yield data, name
+                sentence_id = 0
+                for vector in self.source.get_vector(file_name):
+                    if vector is not None:
+                        yield name, sentence_id, vector
+                        sentence_id += 1
 
 
 class DataIterator(object):
@@ -62,38 +65,45 @@ class DataIterator(object):
         data_file = Path(all_data_path + '_data.npy')
         class_file = Path(all_data_path + '_class.npy')
         name_file = Path(all_data_path + '_name.npy')
+        sentences_file = Path(all_data_path + '_sentences.npy')
         if data_file.exists():
             logger.info('Found created file. Loading %s...', str(data_file))
             data = np.load(str(data_file))
             type_data = np.load(str(class_file))
             names_data = np.load(str(name_file))
+            sentence_ids = np.load(str(sentences_file))
             logger.info('Using saved data %s with %i records', str(data_file), len(data))
-            return data, names_data, type_data
+            return names_data, sentence_ids, type_data, data
 
         vectors = NumpyDynamic(np.object)
         values = NumpyDynamic(np.int32)
         file_names = NumpyDynamic(np.object)
+        sentence_ids = NumpyDynamic(np.object)
         length = []
-        for item_class, name, item in self:
+        for item_class, name, sentence_id, item in self:
             vectors.add(item)
             file_names.add(name)
+            sentence_ids.add(sentence_id)
             values.add(item_class)
             length.append(len(item))
 
+        sentence_ids = sentence_ids.finalize()
         data = vectors.finalize()
         names_data = file_names.finalize()
         type_data = values.finalize()
 
         if len(data) == 0:
             raise Exception("No files found")
-        total =(float(len(length) + 0.1))
+        total = (float(len(length) + 0.1))
         logger.info("Loaded %s - %i with average length %6.2f, min: %i and max %i", self.data_path, len(data),
                     sum(length) / total, min(length), max(length))
         logger.info('Saving %s', str(data_file))
         np.save(str(data_file), data)
         np.save(str(class_file), type_data)
         np.save(str(name_file), names_data)
-        return data, names_data, type_data
+        np.save(str(sentences_file), sentence_ids)
+
+        return names_data, sentence_ids, type_data, data
 
 
 class ClassDataIterator(DataIterator):
@@ -102,18 +112,18 @@ class ClassDataIterator(DataIterator):
         pos_files = FileIterator(self.source, path.join(self.data_path, 'pos'))
         neg_files = FileIterator(self.source, path.join(self.data_path, 'neg'))
 
-        for vector, name, in pos_files:
-            yield 1, name, vector
-        for vector, name in neg_files:
-            yield 0, name, vector
+        for name, sentence_id, vector in pos_files:
+            yield 1, sentence_id, name, vector
+        for vector, sentence_id, name in neg_files:
+            yield 0, sentence_id, name, vector
 
 
 class SingeDataIterator(DataIterator):
 
     def __iter__(self):
         pos_files = FileIterator(self.source, self.data_path)
-        for vector, name in pos_files:
-            yield -1, name, vector
+        for name, sentence_id, vector in pos_files:
+            yield -1, name, sentence_id, vector
 
 
 class SemEvalFileReader(object):
@@ -133,11 +143,13 @@ class SemEvalFileReader(object):
                     type_class = self.convertor.is_supported(row[total_rows - 2])
                     if type_class is not None:
                         text = row[total_rows - 1]
-                        vector = self.source.get_vector_from_review(text)
-                        if vector is not None:
-                            yield type_class, review_id, vector
-                        else:
-                            logger.warn("Vector not found: %s", text)
+                        sentence_id = 0
+                        for vector in self.source.get_vector_from_review(text):
+                            if vector is not None:
+                                yield type_class, review_id, sentence_id, vector
+                            else:
+                                logger.warning("Vector not found: %s", text)
+                            sentence_id += 1
 
 
 class SemEvalDataIterator(DataIterator):
@@ -149,14 +161,14 @@ class SemEvalDataIterator(DataIterator):
 
     def __iter__(self):
         if path.isfile(self.data_path):
-            for type_class, review_id, vector in SemEvalFileReader(self.data_path, self.source, self.convertor):
-                yield type_class, review_id, vector
+            for type_class, review_id, sentence_id, vector in SemEvalFileReader(self.data_path, self.source, self.convertor):
+                yield type_class, review_id, sentence_id, vector
         else:
             for (root, dir_names, files) in walk(self.data_path):
                 for name in files:
                     file_name = path.join(root, name)
-                    for type_class, review_id, vector in SemEvalFileReader(file_name, self.source, self.convertor):
-                        yield type_class, review_id, vector
+                    for type_class, review_id, sentence_id, vector in SemEvalFileReader(file_name, self.source, self.convertor):
+                        yield type_class, review_id, sentence_id, vector
 
 
 

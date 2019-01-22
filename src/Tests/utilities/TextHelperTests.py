@@ -12,10 +12,10 @@ class TextHelperTests(unittest.TestCase):
     @unpack
     def is_emoticon_test(self, text, result):
         is_emoticon = TextHelper.is_emoticon(text)
-        self.assertEquals(result, is_emoticon)
+        self.assertEqual(result, is_emoticon)
 
     @data(['#cool', True], ['cool', False], ['#', False])
     @unpack
     def is_hash_test(self, text, result):
         is_hash = TextHelper.is_hash(text)
-        self.assertEquals(result, is_hash)
+        self.assertEqual(result, is_hash)

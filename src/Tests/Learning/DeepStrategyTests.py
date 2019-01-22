@@ -33,6 +33,6 @@ class WeightsLSTMTests(unittest.TestCase):
         name, test_x, test_y = self.loader.get_data('test', delete=True)
         test_x = sequence.pad_sequences(test_x, maxlen=500)
         y = first.predict(test_x)
-        self.assertEquals(20, len(y))
+        self.assertEqual(20, len(y))
         self.assertGreater(sum(y > 0.5), 0)
         self.assertGreater(sum(y < 0.5), 0)

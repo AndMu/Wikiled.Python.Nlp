@@ -23,7 +23,7 @@ class DataIteratorTests(unittest.TestCase):
             self.iterator = ClassDataIterator(instance, 'root', 'test')
 
     def test_bin_location(self):
-        self.assertEquals('C:/Temp/Sentiment\\bin\\root\\test\\name', self.iterator.bin_location)
+        self.assertEqual('C:/Temp/Sentiment\\bin\\root\\test\\name', self.iterator.bin_location)
 
 
 @ddt
@@ -34,6 +34,9 @@ class SemEvalDataIteratorTests(unittest.TestCase):
         word2vec = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/Imdb_min2.bin'), vocab_size=10000)
         cls.source = EmbeddingVecSource(lexicon, word2vec)
 
+    def setUp(self):
+        self.source.use_sentence = False
+
     @data([2, 8047, 5690], [3, 14885, 5690])
     @unpack
     def test_parsing(self, num_class, expected, expected_pos):
@@ -42,12 +45,12 @@ class SemEvalDataIteratorTests(unittest.TestCase):
             covertor = ClassConvertor("Three", {"positive": 2, "negative": 0, "neutral": 1})
         iterator = SemEvalDataIterator(self.source, path.join(Constants.DATASETS, 'Test'), 'SemEval', covertor)
         iterator.delete_cache()
-        data, names_data, type_data = iterator.get_data()
-        self.assertEquals(expected, len(data))
-        data, names_data, type_data = iterator.get_data()
-        self.assertEquals(expected, len(data))
+        names_data, sentences, type_data, data = iterator.get_data()
+        self.assertEqual(expected, len(data))
+        names_data, sentences, type_data, data = iterator.get_data()
+        self.assertEqual(expected, len(data))
         class_id = num_class - 1
-        self.assertEquals(expected_pos, sum(type_data == class_id))
+        self.assertEqual(expected_pos, sum(type_data == class_id))
 
     @data([2, 915, 575], [3, 1654, 739])
     @unpack
@@ -60,11 +63,11 @@ class SemEvalDataIteratorTests(unittest.TestCase):
         iterator = SemEvalDataIterator(self.source, path.join(Constants.DATASETS, 'Test'),
                                        'SemEval/twitter-2013dev-A.txt', covertor)
         iterator.delete_cache()
-        data, names_data, type_data = iterator.get_data()
-        self.assertEquals(expected, len(data))
-        data, names_data, type_data = iterator.get_data()
-        self.assertEquals(expected, len(data))
-        self.assertEquals(expected_pos, sum(type_data == 1))
+        names_data, sentences, type_data, data = iterator.get_data()
+        self.assertEqual(expected, len(data))
+        names_data, sentences, type_data, data = iterator.get_data()
+        self.assertEqual(expected, len(data))
+        self.assertEqual(expected_pos, sum(type_data == 1))
 
     def test_parsing_multiclass_file(self):
 
@@ -72,8 +75,20 @@ class SemEvalDataIteratorTests(unittest.TestCase):
         iterator = SemEvalDataIterator(self.source, path.join(Constants.DATASETS, 'Test'),
                                        'SemEval/twitter-2016devtest-CE.out', covertor)
         iterator.delete_cache()
-        data, names_data, type_data = iterator.get_data()
-        self.assertEquals(2000, len(data))
-        self.assertEquals(264, sum(type_data == 0))
-        self.assertEquals(583, sum(type_data == 1))
-        self.assertEquals(1153, sum(type_data == 2))
+        names_data, sentences, type_data, data = iterator.get_data()
+        self.assertEqual(2000, len(data))
+        self.assertEqual(264, sum(type_data == 0))
+        self.assertEqual(583, sum(type_data == 1))
+        self.assertEqual(1153, sum(type_data == 2))
+
+    def test_parsing_multiclass_sentences(self):
+        self.source.use_sentence = True
+        covertor = ClassConvertor("Multi ", {"-2": 0, "-1": 0, "0": 1, "1": 2, "2": 2})
+        iterator = SemEvalDataIterator(self.source, path.join(Constants.DATASETS, 'Test'),
+                                       'SemEval/twitter-2016devtest-CE.out', covertor)
+        iterator.delete_cache()
+        names_data, sentences, type_data, data = iterator.get_data()
+        self.assertEqual(3686, len(data))
+        self.assertEqual(477, sum(type_data == 0))
+        self.assertEqual(1028, sum(type_data == 1))
+        self.assertEqual(2181, sum(type_data == 2))

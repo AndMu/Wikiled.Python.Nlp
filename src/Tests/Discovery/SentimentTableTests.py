@@ -71,9 +71,9 @@ class SentimentTableTests(unittest.TestCase):
     def test_construct_from_dict(self):
         table = LexiconHelper.load_lexicon("inquirer")
         sentiment = SentimentTable.construct_from_dict(table)
-        self.assertEquals(3457, len(sentiment.original_data))
-        self.assertEquals(1565, len(sentiment.positive))
-        self.assertEquals(1892, len(sentiment.negative))
+        self.assertEqual(3457, len(sentiment.original_data))
+        self.assertEqual(1565, len(sentiment.positive))
+        self.assertEqual(1892, len(sentiment.negative))
 
     # preparing to test
     def setUp(self):

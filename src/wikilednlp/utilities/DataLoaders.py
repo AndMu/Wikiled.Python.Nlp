@@ -25,8 +25,8 @@ class DataLoader(object):
         if delete:
             train_iterator.delete_cache()
 
-        data_x, name, data_y = train_iterator.get_data()
-        return name, data_x, data_y
+        name, sentence_ids, data_y, data_x = train_iterator.get_data()
+        return name, sentence_ids, data_x, data_y
 
 
 class ImdbDataLoader(DataLoader):

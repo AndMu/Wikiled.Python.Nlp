@@ -145,7 +145,7 @@ class ClassConvertor(object):
     def is_supported(self, y):
         if y not in self.class_dict:
             if not ClassConvertor.ignore_error:
-                logger.warn("Value %s not supported", y)
+                logger.warning("Value %s not supported", y)
             return None
         return self.class_dict[y]
 

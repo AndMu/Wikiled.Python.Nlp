@@ -128,9 +128,9 @@ class Word2VecEmbedding(Embedding):
     def __init__(self, model):
         vocabulary = list(model.vocab.keys())
         self.word_vector_table = {w: model[w] for w in vocabulary}
-        super(Word2VecEmbedding, self).__init__('Word2Vec', vocabulary, model.syn0)
+        super(Word2VecEmbedding, self).__init__('Word2Vec', vocabulary, model.wv.vectors)
         model.init_sims()
-        self.vectors_normalized = model.syn0norm
+        self.vectors_normalized = model.wv.vectors_norm
         self.model = model
 
 

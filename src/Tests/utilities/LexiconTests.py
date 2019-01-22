@@ -15,18 +15,18 @@ class LexiconTests(unittest.TestCase):
 
     def test_word_tokenize(self):
         tokens = self.lexicon.word_tokenize('My sample text')
-        self.assertEquals(3, len(tokens))
+        self.assertEqual(3, len(tokens))
 
     def test_review_to_wordlist(self):
         tokens = self.lexicon.review_to_wordlist('My the sample text')
-        self.assertEquals(4, len(tokens))
+        self.assertEqual(4, len(tokens))
         self.lexicon.remove_stopwords = True
         tokens = self.lexicon.review_to_wordlist('My the sample text')
-        self.assertEquals(2, len(tokens))
+        self.assertEqual(2, len(tokens))
 
     def test_review_to_sentences(self):
         tokens = self.lexicon.review_to_sentences('My the sample text')
-        self.assertEquals(1, len(list(tokens)))
+        self.assertEqual(1, len(list(tokens)))
 
 
 class Word2VecManagerTests(unittest.TestCase):
@@ -35,4 +35,4 @@ class Word2VecManagerTests(unittest.TestCase):
         self.lexicon = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'))
 
     def test_construction(self):
-        self.assertEquals('SemEval_min2', self.lexicon.name)
+        self.assertEqual('SemEval_min2', self.lexicon.name)

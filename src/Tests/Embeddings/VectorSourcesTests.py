@@ -22,5 +22,5 @@ class EmbeddingVecSourceTests(unittest.TestCase):
 
     def test_get_vector_from_tokens(self):
         data_result = self.source.get_vector_from_tokens(('good', 'bad'))
-        self.assertEquals(2, len(data_result))
-        self.assertEquals(274, data_result[1])
+        self.assertEqual(2, len(data_result))
+        self.assertEqual(274, data_result[1])

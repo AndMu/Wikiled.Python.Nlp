@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="wikilednlp",
-    version="0.0.1",
+    version="0.0.2",
     author="Wikiled",    
     description="Nlp Package",
     long_description=long_description,
