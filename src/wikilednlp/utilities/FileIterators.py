@@ -114,7 +114,7 @@ class ClassDataIterator(DataIterator):
 
         for name, sentence_id, vector in pos_files:
             yield 1, name, sentence_id, vector
-        for vector, sentence_id, name in neg_files:
+        for name, sentence_id, vector in neg_files:
             yield 0, name, sentence_id, vector
 
 
