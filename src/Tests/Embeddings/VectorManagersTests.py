@@ -2,6 +2,8 @@ import unittest
 
 from os import path
 
+import numpy as np
+
 from wikilednlp.embeddings.Embedding import MainWord2VecEmbedding
 from wikilednlp.embeddings.VectorManagers import Word2VecManager, EmbeddingManager
 from wikilednlp.utilities import Constants
@@ -24,11 +26,16 @@ class Word2VecManagerTests(unittest.TestCase):
         self.assertEqual(0, self.word2vec.embedding_matrix[0][0])
         self.assertNotEquals(0, self.word2vec_zero.embedding_matrix[0][0])
 
-    def construct_dataset(self):
+    def test_construct_dataset(self):
         result = self.word2vec.construct_dataset(['good', 'bad'])
         self.assertEqual(2, len(result))
         self.assertEqual('good', result[0][0])
         self.assertEqual(500, len(result[0][1]))
+
+    def test_get_matrix(self):
+        data = np.array([[1, 0, 3], [10, 20, 30]])
+        result = self.word2vec.get_matrix(data)
+        self.assertEqual(2, len(result))
 
 
 class EmbeddingManagerTest(unittest.TestCase):

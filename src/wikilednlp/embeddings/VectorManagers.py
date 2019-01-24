@@ -42,6 +42,17 @@ class BaseVecManager(object):
 
         logger.debug("Initialized")
 
+    def get_matrix(self, data):
+        logger.debug("Getting matrix")
+        embedding = np.zeros((data.shape[0], data.shape[1], self.vector_size))
+        document_id = 0
+        for document in data:
+            vec = np.array([self.embedding_matrix[d] for d in document])
+            embedding[document_id] = vec
+            document_id += 1
+        logger.debug("Getting matrix Done!")
+        return embedding
+
     def get_vocabulary(self):
         return self.word_index
 
