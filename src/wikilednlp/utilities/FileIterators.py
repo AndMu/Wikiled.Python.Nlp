@@ -46,7 +46,10 @@ class DataIterator(object):
         self.data_path = path.join(root, data_path)
         root_name = path.split(root)[1]
         sub_folder = ''.join(ch for ch in data_path if ch.isalnum())
-        self.bin_location = path.join(Constants.TEMP, 'bin', root_name, sub_folder, self.source.word2vec.name)
+        tag = "review"
+        if source.use_sentence:
+            tag = "sentence"
+        self.bin_location = path.join(Constants.TEMP, 'bin', root_name, sub_folder, self.source.word2vec.name, taga)
 
     @abc.abstractmethod
     def __iter__(self):
@@ -62,10 +65,10 @@ class DataIterator(object):
         if not Path(all_data_path).exists():
             makedirs(all_data_path)
 
-        data_file = Path(all_data_path + '_data.npy')
-        class_file = Path(all_data_path + '_class.npy')
-        name_file = Path(all_data_path + '_name.npy')
-        sentences_file = Path(all_data_path + '_sentences.npy')
+        data_file = Path(path.join(all_data_path, 'data.npy'))
+        class_file = Path(path.join(all_data_path, '_class.npy'))
+        name_file = Path(path.join(all_data_path, '_name.npy'))
+        sentences_file = Path(path.join(all_data_path, '_sentences.npy'))
         if data_file.exists():
             logger.info('Found created file. Loading %s...', str(data_file))
             data = np.load(str(data_file))
