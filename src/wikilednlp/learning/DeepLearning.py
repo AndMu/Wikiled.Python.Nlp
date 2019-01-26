@@ -1,4 +1,5 @@
 import abc
+from abc import ABC, abstractmethod
 import os
 from os import path, makedirs
 from keras.initializers import Constant
@@ -19,12 +20,12 @@ seed = 7
 np.random.seed(seed)
 
 
-class BaseDeepStrategy(object):
+class BaseDeepStrategy(ABC):
     __metaclass__ = abc.ABCMeta
 
     counter = 0
 
-    def __init__(self, project_name, sub_project, max_length):
+    def __init__(self, project_name, loader, sub_project, max_length):
         self.counter = BaseDeepStrategy.counter
         BaseDeepStrategy.counter += 1
         self.max_length = max_length
@@ -35,6 +36,7 @@ class BaseDeepStrategy(object):
         self.model = None
         self.early_stop = None
         self.output_drop_out = 0.5
+        self.loader = loader
         self.total_classes = self.loader.convertor.total_classes()
 
     def get_embeddings(self):
@@ -51,7 +53,7 @@ class BaseDeepStrategy(object):
     def add_output(self, model):
         if self.output_drop_out is not None:
             model = Dropout(self.output_drop_out)(model)
-        output = Dense(self.total_classes, activation='softmax', name='Main Output')(model)
+        output = Dense(self.total_classes, activation='softmax', name='Main_Output')(model)
         return output
 
     def init_mode(self):
@@ -105,6 +107,10 @@ class BaseDeepStrategy(object):
         y_prob = self.predict_proba(test_x)
         return y_prob.argmax(axis=-1)
 
+    @abstractmethod
+    def construct_model(self):
+        pass
+
     def test_predict(self, test_x, test_y):
         logger.info('Test predict_proba with %i records', len(test_x))
         result_y_prob = self.predict_proba(test_x)
@@ -142,10 +148,10 @@ class CnnSentiment(BaseDeepStrategy):
 
     def __init__(self, loader, project_name, max_length, vocab_size=10000):
         self.max_length = max_length
-        self.vocab_size = vocab_size
+        self.vocab_size = vocab_size        
         self.loader = loader
-        self.word_vector_size = self.loader.parser.word2vec.vector_size
-        super(CnnSentiment, self).__init__(project_name, self.get_name(), max_length)
+        self.word_vector_size = loader.parser.word2vec.vector_size
+        super(CnnSentiment, self).__init__(project_name, loader, self.get_name(), max_length)
 
     def get_name(self):
         return self.loader.parser.word2vec.name + '_CnnSentiment'

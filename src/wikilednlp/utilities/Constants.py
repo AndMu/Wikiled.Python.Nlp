@@ -1,10 +1,13 @@
 from os import path
 import socket
-
+import os
 
 hostname = socket.gethostname()
-TEMP = "C:/Temp/Sentiment"
 
+if os.name == 'nt':
+    TEMP = "C:/Temp/Sentiment"
+else:
+    TEMP = "Temp/Sentiment"
 
 def get_root_by_host():
     if hostname.lower() == 'main-pc':
