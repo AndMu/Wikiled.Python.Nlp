@@ -2,6 +2,7 @@ import abc
 
 import logging
 
+from wikilednlp.utilities import LoadingResult
 from wikilednlp.utilities.FileIterators import ClassDataIterator, SingeDataIterator, SemEvalDataIterator
 logger = logging.getLogger(__name__)
 
@@ -18,15 +19,15 @@ class DataLoader(object):
     def get_iterator(self, data_path, class_iter=True):
         pass
 
-    def get_data(self, data_path, delete=False, class_iter=True):
+    def get_data(self, data_path, delete=False, class_iter=True) -> LoadingResult:
         logger.info("Loading [%s]...", data_path)
         train_iterator = self.get_iterator(data_path, class_iter)
 
         if delete:
             train_iterator.delete_cache()
 
-        name, sentence_ids, data_y, data_x = train_iterator.get_data()
-        return name, sentence_ids, data_x, data_y
+        record = train_iterator.get_data()
+        return record
 
 
 class ImdbDataLoader(DataLoader):

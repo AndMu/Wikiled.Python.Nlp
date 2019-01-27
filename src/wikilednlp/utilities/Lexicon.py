@@ -9,6 +9,7 @@ from wikilednlp.utilities.Utilities import Utilities
 nltk.download('stopwords')
 nltk.download('punkt')
 
+
 class Lexicon:
 
     def __init__(self, tokenizer, remove_stopwords=False):

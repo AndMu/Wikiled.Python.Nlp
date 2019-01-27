@@ -2,7 +2,7 @@ from os import path
 import socket
 import os
 
-hostname = socket.gethostname()
+hostname = socket.gethostname().lower()
 
 if os.name == 'nt':
     TEMP = "C:/Temp/Sentiment"
@@ -10,11 +10,11 @@ else:
     TEMP = "Temp/Sentiment"
 
 def get_root_by_host():
-    if hostname.lower() == 'main-pc':
+    if hostname == 'main-pc':
         return 'g:/'
-    if hostname.lower() == 'alienpc':
+    if hostname == 'alienpc' or hostname == 'hp-z8':
         return 'e:/'
-    elif hostname.lower() == 'dev-pc':
+    elif hostname == 'dev-pc':
         return '//storage/monitoring'
     else:
         return 'c:/'
