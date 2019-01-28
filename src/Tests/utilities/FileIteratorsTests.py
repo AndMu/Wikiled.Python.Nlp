@@ -46,11 +46,11 @@ class SemEvalDataIteratorTests(unittest.TestCase):
         iterator = SemEvalDataIterator(self.source, path.join(Constants.DATASETS, 'Test'), 'SemEval', covertor)
         iterator.delete_cache()
         record = iterator.get_data()
-        self.assertEqual(expected, len(record.data))
+        self.assertEqual(expected, len(record.x_data))
         record = iterator.get_data()
-        self.assertEqual(expected, len(record.data))
+        self.assertEqual(expected, len(record.x_data))
         class_id = num_class - 1
-        self.assertEqual(expected_pos, sum(record.result_classes == class_id))
+        self.assertEqual(expected_pos, sum(record.y_data == class_id))
 
     @data([2, 915, 575], [3, 1654, 739])
     @unpack
@@ -64,10 +64,10 @@ class SemEvalDataIteratorTests(unittest.TestCase):
                                        'SemEval/twitter-2013dev-A.txt', covertor)
         iterator.delete_cache()
         record = iterator.get_data()
-        self.assertEqual(expected, len(record.data))
+        self.assertEqual(expected, len(record.x_data))
         record = iterator.get_data()
-        self.assertEqual(expected, len(record.data))
-        self.assertEqual(expected_pos, sum(record.result_classes == 1))
+        self.assertEqual(expected, len(record.x_data))
+        self.assertEqual(expected_pos, sum(record.y_data == 1))
 
     def test_parsing_multiclass_file(self):
 
@@ -76,10 +76,10 @@ class SemEvalDataIteratorTests(unittest.TestCase):
                                        'SemEval/twitter-2016devtest-CE.out', covertor)
         iterator.delete_cache()
         record = iterator.get_data()
-        self.assertEqual(2000, len(record.data))
-        self.assertEqual(264, sum(record.result_classes == 0))
-        self.assertEqual(583, sum(record.result_classes == 1))
-        self.assertEqual(1153, sum(record.result_classes == 2))
+        self.assertEqual(2000, len(record.x_data))
+        self.assertEqual(264, sum(record.y_data == 0))
+        self.assertEqual(583, sum(record.y_data == 1))
+        self.assertEqual(1153, sum(record.y_data == 2))
 
     def test_parsing_multiclass_sentences(self):
         self.source.use_sentence = True
@@ -88,7 +88,7 @@ class SemEvalDataIteratorTests(unittest.TestCase):
                                        'SemEval/twitter-2016devtest-CE.out', covertor)
         iterator.delete_cache()
         record = iterator.get_data()
-        self.assertEqual(3686, len(record.data))
-        self.assertEqual(477, sum(record.result_classes == 0))
-        self.assertEqual(1028, sum(record.result_classes == 1))
-        self.assertEqual(2181, sum(record.result_classes == 2))
+        self.assertEqual(3690, len(record.x_data))
+        self.assertEqual(478, sum(record.y_data == 0))
+        self.assertEqual(1029, sum(record.y_data == 1))
+        self.assertEqual(2183, sum(record.y_data == 2))

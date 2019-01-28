@@ -9,25 +9,26 @@ from pathlib2 import Path
 
 class LoadingSingleResult(object):
 
-    def __init__(self, name, data):
+    def __init__(self, name, x):
         self.name = name
-        self.result_class = None
-        self.data = data
+        self.y = None
+        self.x = x
         self.block_id = None
         self.text = None
 
 
 class LoadingResult(object):
 
-    def __init__(self, names, result_classes, data, block_ids=None, document_type='document'):
+    def __init__(self, names, y_data, x_data, block_ids=None, document_type='document'):
         self.names = names
-        self.result_classes = result_classes
-        self.data = data
+        self.y_data = y_data
+        self.x_data = x_data
         if block_ids is None:
-            self.block_ids = np.zeros(self.data.shape)
+            self.block_ids = np.zeros(self.x_data.shape)
         else:
             self.block_ids = block_ids
         self.document_type = document_type
+        self.original = []
 
     def save(self, data_path):
         data_file = Path(path.join(data_path, 'data.npy'))
@@ -35,8 +36,8 @@ class LoadingResult(object):
         name_file = Path(path.join(data_path, 'name.npy'))
         sentences_file = Path(path.join(data_path, 'sentences.npy'))
         logger.info('Saving %s', str(data_file))
-        np.save(str(data_file), self.data)
-        np.save(str(class_file), self.result_classes)
+        np.save(str(data_file), self.x_data)
+        np.save(str(class_file), self.y_data)
         np.save(str(name_file), self.names)
         np.save(str(sentences_file), self.block_ids)
 
@@ -64,33 +65,37 @@ class LoadingResult(object):
 
 class LoadingResultDynamic(object):
     def __init__(self, result_type='document'):
-        self.vectors = NumpyDynamic(np.object)
-        self.result_class = NumpyDynamic(np.int32)
-        self.file_name = NumpyDynamic(np.object)
-        self.sentence_id = NumpyDynamic(np.object)
+        self.x_vectors = NumpyDynamic(np.object)
+        self.y_class = NumpyDynamic(np.int32)
+        self.names = NumpyDynamic(np.object)
+        self.block_ids = NumpyDynamic(np.object)
         self.length = []
         self.result_type = result_type
         self.total = None
+        self.original = []
 
     def add(self, record: LoadingSingleResult):
-        self.vectors.add(record.data)
-        self.file_name.add(record.name)
-        self.sentence_id.add(record.block_id)
-        if record.result_class is None:
-            self.result_class.add(-1)
+        if record.y is not None:
+            self.x_vectors.add(record.x)
+            self.names.add(record.name)
+            self.block_ids.add(record.block_id)
+            self.y_class.add(record.y)
+            self.length.append(len(record.x))
+            self.original.append(record)
         else:
-            self.result_class.add(record.result_class)
-        self.length.append(len(record.data))
+            logger.warning('Dropping records without class')
 
     def finalize(self) -> LoadingResult:
-        sentence_ids = self.sentence_id.finalize()
-        data = self.vectors.finalize()
-        names_data = self.file_name.finalize()
-        types_data = self.result_class.finalize()
+        bock_id = self.block_ids.finalize()
+        x_data = self.x_vectors.finalize()
+        names_data = self.names.finalize()
+        y_data = self.y_class.finalize()
 
-        if len(data) == 0:
+        if len(x_data) == 0:
             raise Exception("No files found")
         self.total = (float(len(self.length) + 0.1))
-        logger.info("Loaded %i with average length %6.2f, min: %i and max %i", len(data),
+        logger.info("Loaded %i with average length %6.2f, min: %i and max %i", len(x_data),
                     sum(self.length) / self.total, min(self.length), max(self.length))
-        return LoadingResult(names_data, types_data, data, sentence_ids, self.result_type)
+        result = LoadingResult(names_data, y_data, x_data, bock_id, self.result_type)
+        result.original = self.original
+        return result

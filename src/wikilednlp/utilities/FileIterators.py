@@ -80,10 +80,10 @@ class ClassDataIterator(DataIterator):
         neg_files = FileIterator(self.source, path.join(self.data_path, 'neg'))
 
         for record in pos_files:
-            record.result_class = 1
+            record.y = 1
             yield record
         for record in neg_files:
-            record.result_class = 0
+            record.y = 0
             yield record
 
 
@@ -92,6 +92,8 @@ class SingeDataIterator(DataIterator):
     def __iter__(self) -> LoadingSingleResult:
         pos_files = FileIterator(self.source, self.data_path)
         for record in pos_files:
+            if record.y is None:
+                record.y = -1
             yield record
 
 
@@ -118,7 +120,7 @@ class SemEvalFileReader(object):
                                 result = LoadingSingleResult(review_id, vector)
                                 result.block_id = sentence_id
                                 result.text = text
-                                result.result_class = type_class
+                                result.y = type_class
                                 yield result
                             else:
                                 logger.warning("Vector not found: %s", text)

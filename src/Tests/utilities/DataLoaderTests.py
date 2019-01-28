@@ -26,14 +26,14 @@ class ImdbDataLoaderTests(unittest.TestCase):
         # delete records, so no clash between dual and single
         record = loader.get_data('train', delete=True)
         self.assertEqual(20, len(record.names))
-        self.assertEqual(20, len(record.data))
-        self.assertEqual(20, len(record.result_classes))
+        self.assertEqual(20, len(record.x_data))
+        self.assertEqual(20, len(record.y_data))
         self.assertEqual(20, len(record.block_ids))
         # Test loading
         record = loader.get_data('train', delete=False)
         self.assertEqual(20, len(record.names))
-        self.assertEqual(20, len(record.data))
-        self.assertEqual(20, len(record.result_classes))
+        self.assertEqual(20, len(record.x_data))
+        self.assertEqual(20, len(record.y_data))
         self.assertEqual(20, len(record.block_ids))
 
     def test_get_single_data(self):
@@ -41,14 +41,14 @@ class ImdbDataLoaderTests(unittest.TestCase):
         # delete records, so no clash between dual and single
         record = loader.get_data('train/pos', delete=True, class_iter=False)
         self.assertEqual(10, len(record.names))
-        self.assertEqual(10, len(record.data))
-        self.assertEqual(10, len(record.result_classes))
+        self.assertEqual(10, len(record.x_data))
+        self.assertEqual(10, len(record.y_data))
         self.assertEqual(10, len(record.block_ids))
         # Test loading
         record = loader.get_data('train/pos', delete=False, class_iter=False)
         self.assertEqual(10, len(record.names))
-        self.assertEqual(10, len(record.data))
-        self.assertEqual(10, len(record.result_classes))
+        self.assertEqual(10, len(record.x_data))
+        self.assertEqual(10, len(record.y_data))
         self.assertEqual(10, len(record.block_ids))
 
     @data(True, False)
