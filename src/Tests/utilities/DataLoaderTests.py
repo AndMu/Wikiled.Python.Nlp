@@ -9,7 +9,7 @@ from wikilednlp.embeddings.VectorSources import EmbeddingVecSource
 from wikilednlp.utilities import Constants
 from wikilednlp.utilities.DataLoaders import ImdbDataLoader
 from wikilednlp.utilities.Lexicon import Lexicon
-from wikilednlp.utilities.Utilities import ClassConvertor
+from wikilednlp.utilities.ClassConvertors import ClassConvertor
 
 @ddt
 class ImdbDataLoaderTests(unittest.TestCase):

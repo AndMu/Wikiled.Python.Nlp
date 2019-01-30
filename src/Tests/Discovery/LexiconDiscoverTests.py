@@ -7,7 +7,6 @@ from wikilednlp.embeddings.VectorManagers import Word2VecManager
 from wikilednlp.utilities import Constants
 
 
-
 class LexiconDiscoverTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

@@ -3,7 +3,10 @@ import abc
 import logging
 
 from wikilednlp.utilities import LoadingResult
-from wikilednlp.utilities.FileIterators import ClassDataIterator, SingeDataIterator, SemEvalDataIterator
+from wikilednlp.utilities.ClassConvertors import ClassConvertor
+from wikilednlp.utilities.FileIterators import ClassDataIterator, SingeDataIterator, SemEvalDataIterator, \
+    NullDataIterator
+
 logger = logging.getLogger(__name__)
 
 
@@ -28,6 +31,16 @@ class DataLoader(object):
 
         record = train_iterator.get_data()
         return record
+
+
+class NullDataLoader(DataLoader):
+    def __init__(self, convertor=None):
+        if convertor is None:
+            convertor = ClassConvertor("Basic", {0: 0, 1: 1})
+        super(NullDataLoader, self).__init__(None, convertor, None)
+
+    def get_iterator(self, data_path, class_iter=True):
+        return NullDataIterator()
 
 
 class ImdbDataLoader(DataLoader):

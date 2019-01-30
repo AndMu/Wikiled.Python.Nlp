@@ -10,7 +10,7 @@ from wikilednlp.embeddings.VectorManagers import Word2VecManager
 from wikilednlp.utilities import Constants
 from wikilednlp.utilities.FileIterators import ClassDataIterator, SemEvalDataIterator
 from wikilednlp.utilities.Lexicon import Lexicon
-from wikilednlp.utilities.Utilities import ClassConvertor
+from wikilednlp.utilities.ClassConvertors import ClassConvertor
 from wikilednlp.embeddings.VectorSources import EmbeddingVecSource
 
 

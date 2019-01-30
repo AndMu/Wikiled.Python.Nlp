@@ -73,6 +73,11 @@ class DataIterator(object):
         return result
 
 
+class NullDataIterator(DataIterator):
+    def __iter__(self) -> LoadingSingleResult:
+        pass
+
+
 class ClassDataIterator(DataIterator):
 
     def __iter__(self) -> LoadingSingleResult:

@@ -7,7 +7,6 @@ from keras import backend as k, Input, Model
 from keras import callbacks
 from keras.layers import Embedding, Dropout, Dense, np, Activation, Conv1D, MaxPooling1D, GlobalMaxPooling1D, LSTM, \
     Bidirectional
-from keras.models import Sequential
 from keras_preprocessing import sequence
 from pathlib2 import Path
 from sklearn.utils import check_array
