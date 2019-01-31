@@ -120,7 +120,7 @@ class SemEvalFileReader(object):
                     if type_class is not None:
                         text = row[total_rows - 1]
                         sentence_id = 0
-                        for vector in self.source.get_vector_from_review(text):
+                        for text, vector in self.source.get_vector_from_review(text):
                             if vector is not None:
                                 result = LoadingSingleResult(review_id, vector)
                                 result.block_id = sentence_id

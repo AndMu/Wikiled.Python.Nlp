@@ -194,7 +194,7 @@ class LSTMSentiment(CnnSentiment):
         return model
 
 
-class BidiLTSMSentiment(CnnSentiment):
+class BidiLTSMSentiment(LSTMSentiment):
 
     def get_name(self):
         return '{}_ENCODER_{}_{}'.format(self.loader.parser.word2vec.name, self.max_length, self.lstm_size)
