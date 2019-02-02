@@ -5,7 +5,7 @@ from pathlib2 import Path
 from os import path, walk
 from wikilednlp.utilities import Constants, logger
 import io
-from wikilednlp.utilities.LoadingResult import LoadingResult, LoadingResultDynamic, LoadingSingleResult
+from wikilednlp.utilities.LoadingResult import LoadingResult, LoadingSingleResult
 
 
 class FileIterator(object):
@@ -63,13 +63,12 @@ class DataIterator(object):
             if result is not None:
                 return result
 
-        dynamic = LoadingResultDynamic(self.tag)
+        dynamic = []
         for record in self:
-            dynamic.add(record)
+            dynamic.append(record)
 
-        result = dynamic.finalize()
+        result = LoadingResult(dynamic)
         result.save(self.bin_location)
-
         return result
 
 

@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class DataLoader(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, parser, convertor, root):
+    def __init__(self, parser, root, convertor=ClassConvertor("Binary", {0: 0, 1: 1})):
         self.root = root
         self.convertor = convertor
         self.parser = parser
@@ -33,16 +33,6 @@ class DataLoader(object):
         return record
 
 
-class NullDataLoader(DataLoader):
-    def __init__(self, convertor=None):
-        if convertor is None:
-            convertor = ClassConvertor("Basic", {0: 0, 1: 1})
-        super(NullDataLoader, self).__init__(None, convertor, None)
-
-    def get_iterator(self, data_path, class_iter=True):
-        return NullDataIterator()
-
-
 class ImdbDataLoader(DataLoader):
 
     def get_iterator(self, data_path, class_iter=True):
@@ -53,10 +43,6 @@ class ImdbDataLoader(DataLoader):
 
 
 class SemEvalDataLoader(DataLoader):
-
-    def __init__(self, parser, convertor, root):
-        super(SemEvalDataLoader, self).__init__(parser, convertor, root)
-        self.convertor = convertor
 
     def get_iterator(self, data_path, class_iter=True):
         return SemEvalDataIterator(self.parser, self.root, data_path, self.convertor)
