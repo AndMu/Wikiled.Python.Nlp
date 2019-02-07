@@ -99,7 +99,7 @@ class BaseDeepStrategy(ABC):
 
     def predict_proba(self, test_x):
         logger.info('Predict with %i records', len(test_x))
-		self.init_mode()
+        self.init_mode()
         test_x = sequence.pad_sequences(test_x, maxlen=self.max_length)
         y = self.model.predict(test_x, batch_size=Constants.TESTING_BATCH, verbose=1)
         return y
