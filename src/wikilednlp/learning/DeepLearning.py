@@ -1,4 +1,5 @@
 import abc
+import gc
 from abc import ABC, abstractmethod
 import os
 from os import path, makedirs
@@ -9,6 +10,7 @@ from keras.layers import Embedding, Dropout, Dense, np, Activation, Conv1D, MaxP
     Bidirectional
 from keras_preprocessing import sequence
 from pathlib2 import Path
+from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils import check_array
 
 import wikilednlp.utilities.Constants as Constants
@@ -175,6 +177,16 @@ class CnnSentiment(BaseDeepStrategy):
         # Inner Product layer (as in regular neural network, but without non-linear activation function)
         return model
 
+    def copy(self):
+        copy_instance = CnnSentiment(self.loader, self.project_name, self.max_length, self.vocab_size)
+        return copy_instance
+
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
+
 
 class LSTMSentiment(CnnSentiment):
 
@@ -193,6 +205,16 @@ class LSTMSentiment(CnnSentiment):
         model = Model(sequence_input, preds)
         return model
 
+    def copy(self):
+        copy_instance = LSTMSentiment(self.loader, self.project_name, self.max_length, self.vocab_size, self.lstm_size)
+        return copy_instance
+
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
+
 
 class BidiLTSMSentiment(LSTMSentiment):
 
@@ -206,3 +228,37 @@ class BidiLTSMSentiment(LSTMSentiment):
         preds = self.add_output(x)
         model = Model(sequence_input, preds)
         return model
+
+    def copy(self):
+        copy_instance = BidiLTSMSentiment(self.loader, self.project_name, self.max_length, self.vocab_size, self.lstm_size)
+        return copy_instance
+
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
+
+
+class DeepSklearnWrapper(BaseEstimator, ClassifierMixin):
+
+    def __init__(self, classifier):
+        self.classifier = classifier
+
+    def fit(self, x, y):
+        y = self.classifier.loader.convertor.create_vector(y)
+        result = self.classifier.fit(x, y)
+        self.classifier.save('Multi_' + str(self.classifier.counter))
+        self.classes_ = self.classifier.get_classes(y)
+        del self.classifier.model
+        gc.collect()
+        return result
+
+    def predict_proba(self, x):
+        self.classifier.load("Multi_" + str(self.classifier.counter))
+        y = self.classifier.predict_proba(x)
+        if len(self.classes_) == 2:
+            y = Utilities.make_binary_prob(y)
+        del self.classifier.model
+        gc.collect()
+        return y
