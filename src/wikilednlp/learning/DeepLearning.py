@@ -162,7 +162,7 @@ class CnnSentiment(BaseDeepStrategy):
 
         k.set_image_data_format('channels_first')
 
-        sequence_input = Input(shape=(self.max_length,), dtype='int32')
+        sequence_input = Input(shape=(self.max_length,))
         embedded_sequences = self.get_embeddings()(sequence_input)
         x = Conv1D(128, 5, activation='relu')(embedded_sequences)
         x = MaxPooling1D(5)(x)
@@ -199,7 +199,7 @@ class LSTMSentiment(CnnSentiment):
         return '{}_LSTM_{}_{}'.format(self.loader.parser.word2vec.name, self.max_length, self.lstm_size)
 
     def construct_model(self):
-        sequence_input = Input(shape=(self.max_length,), dtype='int32')
+        sequence_input = Input(shape=(self.max_length,))
         embedded_sequences = self.get_embeddings()(sequence_input)
         x = LSTM(self.lstm_size, return_sequences=False)(embedded_sequences)
         preds = self.add_output(x)
@@ -223,7 +223,7 @@ class BidiLTSMSentiment(LSTMSentiment):
         return '{}_ENCODER_{}_{}'.format(self.loader.parser.word2vec.name, self.max_length, self.lstm_size)
 
     def construct_model(self):
-        sequence_input = Input(shape=(self.max_length,), dtype='int32')
+        sequence_input = Input(shape=(self.max_length,))
         embedded_sequences = self.get_embeddings()(sequence_input)
         x = Bidirectional(LSTM(self.lstm_size))(embedded_sequences)
         preds = self.add_output(x)
