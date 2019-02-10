@@ -30,15 +30,17 @@ class BaseDeepStrategy(ABC):
         self.counter = BaseDeepStrategy.counter
         BaseDeepStrategy.counter += 1
         self.max_length = max_length
-        self.project_name = project_name + "_" + sub_project
-        logger.info('%s with doc_size %i', project_name, max_length)
-        self.project_path = path.join(Constants.TEMP, 'Deep', project_name)
+        self.project_path = path.join(Constants.TEMP, 'Deep', project_name, sub_project)        
+        logger.info('%s with doc_size %i to [%s]', project_name, max_length, self.project_path)        
         self.epochs_number = 20
         self.model = None
         self.early_stop = None
         self.output_drop_out = 0.5
         self.loader = loader
         self.total_classes = self.loader.convertor.total_classes()
+
+    def __populate__(self, copy_instance):
+        copy_instance.early_stop = self.early_stop
 
     def get_embeddings(self):
 
@@ -141,6 +143,7 @@ class BaseDeepStrategy(ABC):
             train_y = Utilities.make_dual(train_y, self.total_classes)
         cbks = None
         if self.early_stop is not None:
+            logger.info('Will use early stop with: %i', self.early_stop)
             cbks = [callbacks.EarlyStopping(monitor='val_loss', patience=self.early_stop)]
         self.model.fit(train_x, train_y, batch_size=Constants.TRAINING_BATCH, callbacks=cbks, epochs=self.epochs_number,
                    validation_split=0.25, shuffle=True)
@@ -180,6 +183,7 @@ class CnnSentiment(BaseDeepStrategy):
 
     def copy(self):
         copy_instance = CnnSentiment(self.loader, self.project_name, self.max_length, self.vocab_size)
+        self.__populate__(copy_instance)
         return copy_instance
 
     def __copy__(self):
@@ -208,6 +212,7 @@ class LSTMSentiment(CnnSentiment):
 
     def copy(self):
         copy_instance = LSTMSentiment(self.loader, self.project_name, self.max_length, self.vocab_size, self.lstm_size)
+        self.__populate__(copy_instance)
         return copy_instance
 
     def __copy__(self):
@@ -232,6 +237,7 @@ class BidiLTSMSentiment(LSTMSentiment):
 
     def copy(self):
         copy_instance = BidiLTSMSentiment(self.loader, self.project_name, self.max_length, self.vocab_size, self.lstm_size)
+        self.__populate__(copy_instance)        
         return copy_instance
 
     def __copy__(self):

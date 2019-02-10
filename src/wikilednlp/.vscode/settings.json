@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "C:\\ProgramData\\Anaconda3\\envs\\cntk-py36\\python.exe",
+    "python.pythonPath": "C:\\Users\\Andrius\\AppData\\Local\\conda\\conda\\envs\\cntk-py36\\python.exe",
     "python.unitTest.nosetestArgs": [
         "."
     ],
