@@ -9,6 +9,18 @@ if os.name == 'nt':
 else:
     TEMP = "Temp/Sentiment"
 
+
+use_fp16 = False
+
+
+def set_fp16():
+    from keras import backend as K
+    K.set_floatx('float16')
+    K.set_epsilon(1e-4)
+    global use_fp16
+    use_fp16 = True
+
+
 def get_root_by_host():
     if hostname == 'main-pc':
         return 'g:/'

@@ -30,8 +30,10 @@ class BaseDeepStrategy(ABC):
         self.counter = BaseDeepStrategy.counter
         BaseDeepStrategy.counter += 1
         self.max_length = max_length
-        self.project_path = path.join(Constants.TEMP, 'Deep', project_name, sub_project)        
-        logger.info('%s with doc_size %i to [%s]', project_name, max_length, self.project_path)        
+        self.project_name = project_name
+        self.sub_project = sub_project
+        self.project_path = self.switch_project_path(path.join(Constants.TEMP, 'Deep'))
+        logger.info('[%i] %s [%s] with doc_size %i', self.counter, project_name, sub_project, max_length)
         self.epochs_number = 20
         self.model = None
         self.early_stop = None
@@ -42,10 +44,17 @@ class BaseDeepStrategy(ABC):
     def __populate__(self, copy_instance):
         copy_instance.early_stop = self.early_stop
 
+    def switch_project_path(self, location):
+        self.project_path = path.join(location, self.project_name, self.sub_project)
+        return self.project_path
+
     def get_embeddings(self):
 
         logger.info('get_embeddings')
         vectors = self.loader.parser.word2vec.embedding_matrix
+        if Constants.use_fp16:
+            vectors = vectors.astype('float16')
+
         embedding_layer = Embedding(vectors.shape[0],
                                     vectors.shape[1],
                                     embeddings_initializer=Constant(vectors),
@@ -60,6 +69,8 @@ class BaseDeepStrategy(ABC):
         return output
 
     def init_mode(self):
+        if Constants.use_fp16:
+            logger.info('Using float16!!!')
         if not hasattr(self, 'model') or self.model is None:
             self.model = self.construct_model()
             self.model.summary()
@@ -79,7 +90,7 @@ class BaseDeepStrategy(ABC):
             logger.info('Loading weights [%s]...', cache_file_name)
             self.model.load_weights(cache_file_name)
         else:
-            logger.info('Weights file not found - [%s]...', cache_file_name)
+            raise ValueError('Weights file not found - [%s]...', cache_file_name)
 
     def save(self, name):
         cache_file_name = self.get_file_name(name)
@@ -95,6 +106,8 @@ class BaseDeepStrategy(ABC):
     def test(self, test_x, test_y):
         logger.info('Testing with %i records', len(test_x))
         self.init_mode()
+        if Constants.use_fp16:
+            test_x = test_x.astype('float16')
         test_x = sequence.pad_sequences(test_x, maxlen=self.max_length)
         loss, acc = self.model.evaluate(test_x, test_y, Constants.TESTING_BATCH)
         logger.info('Test loss / Test accuracy = {:.4f} / {:.4f}'.format(loss, acc))
@@ -102,6 +115,8 @@ class BaseDeepStrategy(ABC):
     def predict_proba(self, test_x):
         logger.info('Predict with %i records', len(test_x))
         self.init_mode()
+        if Constants.use_fp16:
+            test_x = test_x.astype('float16')
         test_x = sequence.pad_sequences(test_x, maxlen=self.max_length)
         y = self.model.predict(test_x, batch_size=Constants.TESTING_BATCH, verbose=1)
         return y
@@ -117,6 +132,8 @@ class BaseDeepStrategy(ABC):
 
     def test_predict(self, test_x, test_y):
         logger.info('Test predict_proba with %i records', len(test_x))
+        if Constants.use_fp16:
+            test_x = test_x.astype('float16')
         result_y_prob = self.predict_proba(test_x)
         result_y = Utilities.make_single_dimension(result_y_prob)
         result_y_prob_single = self.loader.convertor.make_single(result_y_prob)
@@ -135,6 +152,8 @@ class BaseDeepStrategy(ABC):
 
     def fit(self, train_x, train_y):
         logger.info('Training with %i records', len(train_x))
+        if Constants.use_fp16:
+            train_y = train_y.astype('float16')
         self.init_mode()
         Utilities.count_occurences(train_y)
         train_x, train_y = Utilities.unison_shuffled_copies(train_x, train_y)
