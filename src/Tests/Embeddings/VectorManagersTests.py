@@ -17,6 +17,12 @@ class Word2VecManagerTests(unittest.TestCase):
         cls.word2vec_zero = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), vocab_size=10000)
         Constants.EMBEDDING_START_INDEX = 1
         cls.word2vec = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), vocab_size=10000)
+        Constants.use_special_symbols = True
+        cls.word2vec_special = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), vocab_size=10000)
+
+    def test_special_construct(self):
+        self.assertEqual(10002, self.word2vec_special.total_words)
+        self.assertEqual(10002, len(self.word2vec_special.word_vectors))
 
     def test_construct(self):
         self.assertEqual(10000, self.word2vec.total_words)

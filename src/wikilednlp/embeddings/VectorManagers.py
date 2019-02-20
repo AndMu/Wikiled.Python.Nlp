@@ -90,22 +90,34 @@ class Word2VecManager(BaseVecManager):
         index_word = {}
         word_vector_table = {}
         vectors = []
+        vector_size = w2vModel.vector_size
+
+        if Constants.use_special_symbols:
+            logger.info('Inserting special Symbols')
+            sorted_list.insert(0, (Constants.END, 1))
+            sorted_list.insert(0, (Constants.START, 1))
+            total_words = total_words + 2
 
         for wordKey in sorted_list:
             word = wordKey[0]
             if len(word) == 0:
                 continue
-            vector = w2vModel.wv[word]
+
+            if Constants.use_special_symbols:
+                vector = np.zeros(vector_size)
+            else:
+                vector = w2vModel.wv[word]
+
             word_index[word] = index
             index_word[index] = word
             vectors.append(vector)
             word_vector_table[word] = vector
             index += 1
 
-        vector_size = w2vModel.vector_size
         word_vectors = np.array(vectors)
         self.w2vModel = w2vModel
-        super(Word2VecManager, self).__init__(name, total_words, word_index, index_word, word_vector_table, vector_size, word_vectors)
+        super(Word2VecManager, self).__init__(name, total_words, word_index, index_word, word_vector_table, vector_size,
+                                              word_vectors)
 
     def construct(self, file_name):
         logger.info('Loading Word2Vec...')
