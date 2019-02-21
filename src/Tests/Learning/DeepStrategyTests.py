@@ -23,7 +23,7 @@ class WeightsLSTMTests(unittest.TestCase):
         pass
 
     def test_acceptance(self):
-        first = CnnSentiment(self.loader, 'AcceptanceTest', 500, vocab_size=10000)
+        first = CnnSentiment(self.loader, 'AcceptanceTest', 500)
         x, y = self.loader.get_data('train', delete=True).get_vectors()
         train_x = sequence.pad_sequences(x, maxlen=500)
         first.fit(train_x, y)

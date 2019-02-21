@@ -40,11 +40,11 @@ class UtilsTests(unittest.TestCase):
         Utilities.measure_performance(y_test, y_actual)
 
     def test_measure_performance_auc(self):
-        y_test = np.array([1, 1, 1, 1, 1, 0, 0])
-        y_actual = np.array([1, 1, 1, 1, 1, 1, 0])
-        y_actual_p = np.array([0.9, 0.4, 1, 1, 1, 1, 0])
+        y_test = np.array([      1,   1,   1,   1,   0, 0,    0, 0])
+        y_actual = np.array([    1,   0,   1,   1,   1, 1,    0, 0])
+        y_actual_p = np.array([0.9, 0.49, 0.97, 0.7, 0.7, 0.55, 0, 0.45])
         vacc, vauc = Utilities.measure_performance_auc(y_test, y_actual, y_actual_p)
-        self.assertEqual(0.86, round(vacc, 2))
+        self.assertEqual(0.71, round(vacc, 2))
         self.assertEqual(0.65, round(vauc, 2))
 
     def test_make_dual_convert(self):

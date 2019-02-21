@@ -92,7 +92,8 @@ class Utilities(object):
             # find validation AUC
             if len(np.unique(test_y)) == 2:
                 vauc = roc_auc_score(test_y, result_y_prob)
-                print('Accurary: {0:.3f} and AUC {1:.3f}'.format(vacc, vauc))
+                vauc_binary = roc_auc_score(test_y, result_y)
+                print('Accurary: {0:.3f} and AUC {1:.3f} and AUC binary: {2:.3f}'.format(vacc, vauc, vauc_binary))
             else:
                 vauc = None
                 print('Accurary: {0:.3f}'.format(vacc))

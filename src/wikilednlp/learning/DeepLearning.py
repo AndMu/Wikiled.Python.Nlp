@@ -44,6 +44,9 @@ class BaseDeepStrategy(ABC):
     def __populate__(self, copy_instance):
         copy_instance.early_stop = self.early_stop
 
+    def get_vocab_size(self):
+        return self.loader.parser.word2vec.total_words
+
     def switch_project_path(self, location):
         self.project_path = path.join(location, self.project_name, self.sub_project)
         return self.project_path
@@ -51,7 +54,7 @@ class BaseDeepStrategy(ABC):
     def get_embeddings(self):
 
         logger.info('get_embeddings')
-        vectors = self.loader.parser.word2vec.embedding_matrix
+        vectors = self.loader.c.embedding_matrix
         if Constants.use_fp16:
             vectors = vectors.astype('float16')
 
@@ -170,9 +173,8 @@ class BaseDeepStrategy(ABC):
 
 class CnnSentiment(BaseDeepStrategy):
 
-    def __init__(self, loader, project_name, max_length, vocab_size=10000):
+    def __init__(self, loader, project_name, max_length):
         self.max_length = max_length
-        self.vocab_size = vocab_size        
         self.loader = loader
         self.word_vector_size = loader.parser.word2vec.vector_size
         super(CnnSentiment, self).__init__(project_name, loader, self.get_name(), max_length)
@@ -201,7 +203,7 @@ class CnnSentiment(BaseDeepStrategy):
         return model
 
     def copy(self):
-        copy_instance = CnnSentiment(self.loader, self.project_name, self.max_length, self.vocab_size)
+        copy_instance = CnnSentiment(self.loader, self.project_name, self.max_length)
         self.__populate__(copy_instance)
         return copy_instance
 
@@ -214,9 +216,9 @@ class CnnSentiment(BaseDeepStrategy):
 
 class LSTMSentiment(CnnSentiment):
 
-    def __init__(self, loader, project_name, max_length, vocab_size=10000, lstm_size=100):
+    def __init__(self, loader, project_name, max_length, lstm_size=100):
         self.lstm_size = lstm_size
-        super(LSTMSentiment, self).__init__(loader, project_name, max_length, vocab_size)
+        super(LSTMSentiment, self).__init__(loader, project_name, max_length)
 
     def get_name(self):
         return '{}_LSTM_{}_{}'.format(self.loader.parser.word2vec.name, self.max_length, self.lstm_size)
@@ -230,7 +232,7 @@ class LSTMSentiment(CnnSentiment):
         return model
 
     def copy(self):
-        copy_instance = LSTMSentiment(self.loader, self.project_name, self.max_length, self.vocab_size, self.lstm_size)
+        copy_instance = LSTMSentiment(self.loader, self.project_name, self.max_length, self.lstm_size)
         self.__populate__(copy_instance)
         return copy_instance
 
@@ -255,7 +257,7 @@ class BidiLTSMSentiment(LSTMSentiment):
         return model
 
     def copy(self):
-        copy_instance = BidiLTSMSentiment(self.loader, self.project_name, self.max_length, self.vocab_size, self.lstm_size)
+        copy_instance = BidiLTSMSentiment(self.loader, self.project_name, self.max_length, self.lstm_size)
         self.__populate__(copy_instance)        
         return copy_instance
 
