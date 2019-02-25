@@ -94,20 +94,30 @@ class Word2VecManager(BaseVecManager):
 
         if Constants.use_special_symbols:
             logger.info('Inserting special Symbols')
-            sorted_list.insert(0, (Constants.END, 1))
-            sorted_list.insert(0, (Constants.START, 1))
-            total_words = total_words + 2
+
+            vector = np.zeros(vector_size)
+            vector[0] = Constants.START_ID
+            word_index[Constants.START] = Constants.START_ID
+            index_word[Constants.START_ID] = Constants.START
+            vectors.append(vector)
+            word_vector_table[Constants.START] = vector
+
+            vector = np.zeros(vector_size)
+            vector[0] = Constants.END_ID
+            word_index[Constants.END] = Constants.END_ID
+            index_word[Constants.END_ID] = Constants.END
+            vectors.append(vector)
+            word_vector_table[Constants.END] = vector
+
+            total_words += 2
+            index += 2
 
         for wordKey in sorted_list:
             word = wordKey[0]
             if len(word) == 0:
                 continue
 
-            if Constants.use_special_symbols:
-                vector = np.zeros(vector_size)
-            else:
-                vector = w2vModel.wv[word]
-
+            vector = w2vModel.wv[word]
             word_index[word] = index
             index_word[index] = word
             vectors.append(vector)

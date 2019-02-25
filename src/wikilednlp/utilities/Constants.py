@@ -15,7 +15,9 @@ use_fp16 = False
 use_special_symbols = False
 
 START = '[START]'
+START_ID = 1
 END = '[END]'
+END_ID = 2
 
 def set_fp16():
     from keras import backend as K

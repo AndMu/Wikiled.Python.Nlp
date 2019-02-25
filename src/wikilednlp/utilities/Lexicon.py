@@ -52,8 +52,6 @@ class Lexicon:
                 yield sencence
 
     def get_words(self, sentence):
-        if Constants.use_special_symbols:
-            yield Constants.START
         for word in self.word_tokenize(sentence):
             if self.remove_stopwords and (word in self.stops or len(word) <= 1):
                 continue
@@ -61,9 +59,6 @@ class Lexicon:
                 yield self.apostrophes[word]
             else:
                 yield TextHelper.get_raw_word(word)
-
-        if Constants.use_special_symbols:
-            yield Constants.END
 
 
 class LexiconHelper(object):

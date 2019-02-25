@@ -61,7 +61,7 @@ class BaseDeepStrategy(ABC):
         embedding_layer = Embedding(vectors.shape[0],
                                     vectors.shape[1],
                                     embeddings_initializer=Constant(vectors),
-                                    input_length=self.max_length,
+                                    # input_length=self.max_length,
                                     trainable=False)
         return embedding_layer
 
