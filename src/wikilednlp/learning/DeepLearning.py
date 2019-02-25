@@ -54,7 +54,7 @@ class BaseDeepStrategy(ABC):
     def get_embeddings(self):
 
         logger.info('get_embeddings')
-        vectors = self.loader.c.embedding_matrix
+        vectors = self.loader.parser.word2vec.embedding_matrix
         if Constants.use_fp16:
             vectors = vectors.astype('float16')
 
