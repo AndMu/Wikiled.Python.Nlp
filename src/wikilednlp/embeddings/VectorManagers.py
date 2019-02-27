@@ -76,11 +76,11 @@ class BaseVecManager(object):
         return vectors
 
 
-class Word2VecManager(BaseVecManager):
+class WordVecManager(BaseVecManager):
 
-    def __init__(self, file_name, is_binary=False, vocab_size=10000):
+    def __init__(self, file_name, model_type='word2vec', vocab_size=10000):
         name = path.splitext(path.split(file_name)[-1])[0]
-        self.is_binary = is_binary
+        self.model_type = model_type.lower()
         w2vModel = self.construct(file_name)
         logger.info('Sorting words')
         sorted_list = sorted(w2vModel.wv.vocab.items(), key=lambda t: t[1].count, reverse=True)[0:vocab_size]
@@ -126,14 +126,17 @@ class Word2VecManager(BaseVecManager):
 
         word_vectors = np.array(vectors)
         self.w2vModel = w2vModel
-        super(Word2VecManager, self).__init__(name, total_words, word_index, index_word, word_vector_table, vector_size,
-                                              word_vectors)
+        super(WordVecManager, self).__init__(name, total_words, word_index, index_word, word_vector_table, vector_size,
+                                             word_vectors)
 
     def construct(self, file_name):
         logger.info('Loading Word2Vec...')
-        if self.is_binary:
+        if self.model_type == 'binary':
             logger.info('Loading binary version')
             return gensim.models.KeyedVectors.load_word2vec_format(file_name, binary=True)
+        elif self.model_type == 'fasttext':
+            logger.info('Loading fasttext version')
+            return gensim.models.FastText.load(file_name)
         return gensim.models.Word2Vec.load(file_name)
 
 

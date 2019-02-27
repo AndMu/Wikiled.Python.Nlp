@@ -6,7 +6,7 @@ from nltk import TreebankWordTokenizer
 
 from wikilednlp.embeddings.VectorSources import EmbeddingVecSource
 from wikilednlp.utilities import Constants
-from wikilednlp.embeddings.VectorManagers import Word2VecManager
+from wikilednlp.embeddings.VectorManagers import WordVecManager
 from wikilednlp.utilities.Lexicon import Lexicon
 
 
@@ -14,7 +14,7 @@ class EmbeddingVecSourceTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.word2vec = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), vocab_size=10000)
+        cls.word2vec = WordVecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), vocab_size=10000)
         cls.lexicon = Lexicon(TreebankWordTokenizer())
 
     def setUp(self):

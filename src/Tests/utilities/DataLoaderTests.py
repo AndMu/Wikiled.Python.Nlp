@@ -4,7 +4,7 @@ from ddt import ddt, data
 from nltk import TreebankWordTokenizer
 from os import path
 
-from wikilednlp.embeddings.VectorManagers import Word2VecManager
+from wikilednlp.embeddings.VectorManagers import WordVecManager
 from wikilednlp.embeddings.VectorSources import EmbeddingVecSource
 from wikilednlp.utilities import Constants
 from wikilednlp.utilities.DataLoaders import ImdbDataLoader
@@ -16,7 +16,7 @@ class ImdbDataLoaderTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         lexicon = Lexicon(TreebankWordTokenizer())
-        word2vec = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), vocab_size=10000)
+        word2vec = WordVecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), vocab_size=10000)
         cls.source = EmbeddingVecSource(lexicon, word2vec)
 
     def test_get_data(self):

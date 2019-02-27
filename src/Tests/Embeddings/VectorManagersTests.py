@@ -5,7 +5,7 @@ from os import path
 import numpy as np
 
 from wikilednlp.embeddings.Embedding import MainWord2VecEmbedding
-from wikilednlp.embeddings.VectorManagers import Word2VecManager, EmbeddingManager
+from wikilednlp.embeddings.VectorManagers import WordVecManager, EmbeddingManager
 from wikilednlp.utilities import Constants
 
 
@@ -14,11 +14,11 @@ class Word2VecManagerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         Constants.EMBEDDING_START_INDEX = 0
-        cls.word2vec_zero = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), vocab_size=10000)
+        cls.word2vec_zero = WordVecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), vocab_size=10000)
         Constants.EMBEDDING_START_INDEX = 1
-        cls.word2vec = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), vocab_size=10000)
+        cls.word2vec = WordVecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), vocab_size=10000)
         Constants.use_special_symbols = True
-        cls.word2vec_special = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), vocab_size=10000)
+        cls.word2vec_special = WordVecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'), vocab_size=10000)
 
     def test_special_construct(self):
         self.assertEqual(10002, self.word2vec_special.total_words)

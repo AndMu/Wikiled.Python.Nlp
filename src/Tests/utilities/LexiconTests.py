@@ -3,7 +3,7 @@ from os import path
 
 from nltk import TreebankWordTokenizer
 
-from wikilednlp.embeddings.VectorManagers import Word2VecManager
+from wikilednlp.embeddings.VectorManagers import WordVecManager
 from wikilednlp.utilities import Constants
 from wikilednlp.utilities.Lexicon import Lexicon
 
@@ -35,7 +35,7 @@ class LexiconTests(unittest.TestCase):
 class Word2VecManagerTests(unittest.TestCase):
 
     def setUp(self):
-        self.lexicon = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'))
+        self.lexicon = WordVecManager(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'))
 
     def test_construction(self):
         self.assertEqual('SemEval_min2', self.lexicon.name)

@@ -11,14 +11,20 @@ from wikilednlp.embeddings import logger
 
 class Word2VecBuilder:
     def __init__(self, lexicon, location=Constants.DATASETS):
-        self.location_out = path.join(location, 'word2vec/')
+        self.location_out = path.join(location, self.get_name() + '/')
         self.lexicon = lexicon
+
+    def get_name(self):
+        return 'Word2Vec'
+
+    def construct_model(self, size, window, min_count):
+        return gensim.models.Word2Vec(size=size, window=window, min_count=min_count, workers=60)
 
     def build(self, source, name, size=500, window=5, min_count=2, dynamic=True):
 
         source = path.join(Constants.DATASETS, source)
-        logger.info("Building word2vec %s...", source)
-        model = gensim.models.Word2Vec(size=size, window=window, min_count=min_count, workers=60)        
+        logger.info("Building %s %s...", self.get_name(), source)
+        model = self.construct_model(size, window, min_count)
 
         source_path = Path(source)
         if not source_path.exists():
@@ -39,6 +45,14 @@ class Word2VecBuilder:
 
         model.save(path.join(self.location_out, name + ".bin"))
         return model
+
+
+class FastTextBuilder(Word2VecBuilder):
+    def get_name(self):
+        return 'FastText'
+
+    def construct_model(self, size, window, min_count):
+        return gensim.models.FastText(size=size, window=window, min_count=min_count, workers=60)
 
 
 class Doc2VecBuilder:

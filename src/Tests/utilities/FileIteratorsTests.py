@@ -6,7 +6,7 @@ from ddt import ddt, data, unpack
 from mock import patch
 from nltk import TreebankWordTokenizer
 
-from wikilednlp.embeddings.VectorManagers import Word2VecManager
+from wikilednlp.embeddings.VectorManagers import WordVecManager
 from wikilednlp.utilities import Constants
 from wikilednlp.utilities.FileIterators import ClassDataIterator, SemEvalDataIterator
 from wikilednlp.utilities.Lexicon import Lexicon
@@ -31,7 +31,7 @@ class SemEvalDataIteratorTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         lexicon = Lexicon(TreebankWordTokenizer())
-        word2vec = Word2VecManager(path.join(Constants.DATASETS, 'word2vec/Imdb_min2.bin'), vocab_size=10000)
+        word2vec = WordVecManager(path.join(Constants.DATASETS, 'word2vec/Imdb_min2.bin'), vocab_size=10000)
         cls.source = EmbeddingVecSource(lexicon, word2vec)
 
     def setUp(self):
