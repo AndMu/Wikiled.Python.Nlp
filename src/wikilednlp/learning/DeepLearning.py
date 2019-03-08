@@ -3,6 +3,8 @@ import gc
 from abc import ABC, abstractmethod
 import os
 from os import path, makedirs
+
+import keras
 from keras.initializers import Constant
 from keras import backend as k, Input, Model
 from keras import callbacks
@@ -39,6 +41,7 @@ class BaseDeepStrategy(ABC):
         self.early_stop = None
         self.output_drop_out = 0.5
         self.loader = loader
+        self.trainable_embeddings = False
         self.total_classes = self.loader.convertor.total_classes()
 
     def __populate__(self, copy_instance):
@@ -53,17 +56,16 @@ class BaseDeepStrategy(ABC):
 
     def get_embeddings(self):
 
-        logger.info('get_embeddings')
         vectors = self.loader.parser.word2vec.embedding_matrix
+        if not self.trainable_embeddings:
+            logger.info('Using trainable embeddings')
+            return Embedding(vectors.shape[0], vectors.shape[1])
+        logger.info('Using pre-trained embeddings')
+
         if Constants.use_fp16:
             vectors = vectors.astype('float16')
 
-        embedding_layer = Embedding(vectors.shape[0],
-                                    vectors.shape[1],
-                                    embeddings_initializer=Constant(vectors),
-                                    # input_length=self.max_length,
-                                    trainable=False)
-        return embedding_layer
+        return Embedding(vectors.shape[0], vectors.shape[1], embeddings_initializer=Constant(vectors), trainable=False)
 
     def add_output(self, model):
         if self.output_drop_out is not None:
@@ -233,6 +235,46 @@ class LSTMSentiment(CnnSentiment):
 
     def copy(self):
         copy_instance = LSTMSentiment(self.loader, self.project_name, self.max_length, self.lstm_size)
+        self.__populate__(copy_instance)
+        return copy_instance
+
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
+
+
+class LSTMSentimentWithExternal(CnnSentiment):
+
+    def __init__(self, loader, project_name, max_length, external_size, lstm_size=100):
+        self.lstm_size = lstm_size
+        self.external_size = external_size
+        super(LSTMSentimentWithExternal, self).__init__(loader, project_name, max_length)
+
+    def get_name(self):
+        return '{}_LSTM_EXTERNAL_{}_{}'.format(self.loader.parser.word2vec.name, self.max_length, self.lstm_size)
+
+    @property
+    def construct_model(self):
+        sequence_input = Input(shape=(self.max_length,))
+        embedded_sequences = self.get_embeddings()(sequence_input)
+        x = LSTM(self.lstm_size, return_sequences=False)(embedded_sequences)
+
+        external_inputs = Input(shape=(self.external_size,))
+        external_inputs = Dense(512, activation='relu')(external_inputs)
+        external_inputs = Dropout(0.5)(external_inputs)
+
+        x = keras.layers.concatenate([x, external_inputs])
+        x = Dense(64, activation='relu')(x)
+        x = Dense(64, activation='relu')(x)
+        x = Dense(64, activation='relu')(x)
+        preds = self.add_output(x)
+        model = Model(inputs=[sequence_input, external_inputs], outputs=preds)
+        return model
+
+    def copy(self):
+        copy_instance = LSTMSentimentWithExternal(self.loader, self.project_name, self.max_length, self.lstm_size)
         self.__populate__(copy_instance)
         return copy_instance
 
