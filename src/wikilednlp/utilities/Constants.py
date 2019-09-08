@@ -52,3 +52,4 @@ set_root(get_root_by_host())
 TRAINING_BATCH = 10
 TESTING_BATCH = 10
 EMBEDDING_START_INDEX = 1
+

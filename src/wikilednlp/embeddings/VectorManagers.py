@@ -1,4 +1,5 @@
 import abc
+from enum import Enum
 
 from nltk import PorterStemmer
 
@@ -9,6 +10,13 @@ import numpy as np
 import gensim
 
 from wikilednlp.utilities.TextHelper import TextHelper
+
+
+class ManagerType(Enum):
+        Binary = 1
+        TextVectors = 2
+        FastText = 3
+        Word2Vec = 3
 
 
 class BaseVecManager(object):
@@ -78,9 +86,9 @@ class BaseVecManager(object):
 
 class WordVecManager(BaseVecManager):
 
-    def __init__(self, file_name, model_type='word2vec', vocab_size=10000):
+    def __init__(self, file_name, model_type=ManagerType.Word2Vec, vocab_size=10000):
         name = path.splitext(path.split(file_name)[-1])[0]
-        self.model_type = model_type.lower()
+        self.model_type = model_type.name.lower()
         w2vModel = self.construct(file_name)
         logger.info('Sorting words')
         sorted_list = sorted(w2vModel.wv.vocab.items(), key=lambda t: t[1].count, reverse=True)[0:vocab_size]
@@ -131,10 +139,13 @@ class WordVecManager(BaseVecManager):
 
     def construct(self, file_name):
         logger.info('Loading Word2Vec...')
-        if self.model_type == 'binary':
+        if self.model_type == ManagerType.Binary:
             logger.info('Loading binary version')
             return gensim.models.KeyedVectors.load_word2vec_format(file_name, binary=True)
-        elif self.model_type == 'fasttext':
+        elif self.model_type == ManagerType.TextVectors:
+            logger.info('Loading text version')
+            return gensim.models.KeyedVectors.load_word2vec_format(file_name, binary=False)
+        elif self.model_type == ManagerType.FastText:
             logger.info('Loading fasttext version')
             return gensim.models.FastText.load(file_name)
         return gensim.models.Word2Vec.load(file_name)

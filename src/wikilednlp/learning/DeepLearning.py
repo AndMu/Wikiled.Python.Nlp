@@ -3,11 +3,11 @@ import gc
 from abc import ABC, abstractmethod
 import os
 from os import path, makedirs
+import numpy as np
 from keras.initializers import Constant
 from keras import backend as k, Input, Model
 from keras import callbacks
-from keras.layers import Embedding, Dropout, Dense, np, Activation, Conv1D, MaxPooling1D, GlobalMaxPooling1D, LSTM, \
-    Bidirectional
+from keras.layers import Embedding, Dropout, Dense, Conv1D, MaxPooling1D, GlobalMaxPooling1D, LSTM, Bidirectional
 from keras_preprocessing import sequence
 from pathlib2 import Path
 from sklearn.base import BaseEstimator, ClassifierMixin
