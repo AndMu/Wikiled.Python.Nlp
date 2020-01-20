@@ -3,9 +3,9 @@ import re
 import shutil
 from pathlib2 import Path
 from os import path, walk
-from wikilednlp.utilities import Constants, logger
+from ..utilities import Constants, logger
 import io
-from wikilednlp.utilities.LoadingResult import LoadingResult, LoadingSingleResult
+from ..utilities.LoadingResult import LoadingResult, LoadingSingleResult
 
 
 class FileIterator(object):

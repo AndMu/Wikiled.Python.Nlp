@@ -3,9 +3,9 @@ from os import path
 from nltk.corpus import stopwords
 import re
 
-from wikilednlp.utilities import Constants
-from wikilednlp.utilities.TextHelper import TextHelper
-from wikilednlp.utilities.Utilities import Utilities
+from ..utilities import Constants
+from ..utilities.TextHelper import TextHelper
+from ..utilities.Utilities import Utilities
 nltk.download('stopwords')
 nltk.download('punkt')
 
@@ -32,6 +32,9 @@ class Lexicon:
         for sentence in self.tokenizer.tokenize(cleantext):
             for word in self.get_words(sentence):
                 words.append(word)
+        if Constants.use_special_symbols:
+            words.insert(0, Constants.START)
+            words.append(Constants.END)
         return words
 
     def review_to_sentences(self, review):

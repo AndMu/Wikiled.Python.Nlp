@@ -86,6 +86,7 @@ class SemEvalDataIteratorTests(unittest.TestCase):
         self.assertEqual(583, sum(y == 1))
         self.assertEqual(1153, sum(y == 2))
 
+
     def test_parsing_multiclass_sentences(self):
         self.source.use_sentence = True
         covertor = ClassConvertor("Multi ", {"-2": 0, "-1": 0, "0": 1, "1": 2, "2": 2})
@@ -94,7 +95,7 @@ class SemEvalDataIteratorTests(unittest.TestCase):
         iterator.delete_cache()
         record = iterator.get_data()
         x, y = record.get_vectors()
-        self.assertEqual(3686, len(x))
-        self.assertEqual(477, sum(y == 0))
-        self.assertEqual(1028, sum(y == 1))
-        self.assertEqual(2181, sum(y == 2))
+        self.assertEqual(3690, len(x))
+        self.assertEqual(478, sum(y == 0))
+        self.assertEqual(1029, sum(y == 1))
+        self.assertEqual(2183, sum(y == 2))

@@ -1,9 +1,9 @@
-from keras import Input, Model
-from keras.layers import LSTM, Dense
 import numpy as np
-from wikilednlp.learning.DeepLearning import CnnSentiment
-from wikilednlp.utilities import Constants
-from wikilednlp.learning import logger
+from ..learning.DeepLearning import CnnSentiment
+from ..utilities import Constants
+from ..learning import logger
+from tensorflow import keras
+from tensorflow_core.python.keras import layers
 
 
 class Seq2Seq(CnnSentiment):
@@ -13,24 +13,24 @@ class Seq2Seq(CnnSentiment):
     def construct_model(self):
 
         vocab_size = self.get_vocab_size() + 1
-        self.encoder_inputs = Input(shape=(None,))
+        self.encoder_inputs = layers.Input(shape=(None,))
         en_x = self.get_embeddings()(self.encoder_inputs)
-        encoder = LSTM(50, return_state=True)
+        encoder = layers.LSTM(50, return_state=True)
         encoder_outputs, state_h, state_c = encoder(en_x)
         # We discard `encoder_outputs` and only keep the states.
         self.encoder_states = [state_h, state_c]
 
         # Set up the decoder, using `encoder_states` as initial state.
-        decoder_inputs = Input(shape=(None,))
+        decoder_inputs = layers.Input(shape=(None,))
         dex = self.get_embeddings()
         final_dex = dex(decoder_inputs)
-        decoder_lstm = LSTM(50, return_sequences=True, return_state=True)
+        decoder_lstm = layers.LSTM(50, return_sequences=True, return_state=True)
 
         decoder_outputs, _, _ = decoder_lstm(final_dex, initial_state=self.encoder_states)
 
-        decoder_dense = Dense(vocab_size, activation='softmax')
+        decoder_dense = layers.Dense(vocab_size, activation='softmax')
         decoder_outputs = decoder_dense(decoder_outputs)
-        model = Model([self.encoder_inputs, decoder_inputs], decoder_outputs)
+        model = keras.Sequential([self.encoder_inputs, decoder_inputs], decoder_outputs)
         return model
 
 
@@ -39,23 +39,23 @@ class Seq2Seq(CnnSentiment):
 
         vocab_size = self.get_vocab_size() + 1
 
-        self.encoder_model = Model(self.encoder_inputs, self.encoder_states)
+        self.encoder_model = keras.Sequential(self.encoder_inputs, self.encoder_states)
         self.encoder_model.summary()
 
-        decoder_state_input_h = Input(shape=(50,))
-        decoder_state_input_c = Input(shape=(50,))
+        decoder_state_input_h = layers.Input(shape=(50,))
+        decoder_state_input_c = layers.Input(shape=(50,))
         decoder_states_inputs = [decoder_state_input_h, decoder_state_input_c]
 
-        decoder_inputs = Input(shape=(None,))
+        decoder_inputs = layers.Input(shape=(None,))
         dex = self.get_embeddings()
         final_dex2 = dex(decoder_inputs)
-        decoder_lstm = LSTM(50, return_sequences=True, return_state=True)
-        decoder_dense = Dense(vocab_size, activation='softmax')
+        decoder_lstm = layers.LSTM(50, return_sequences=True, return_state=True)
+        decoder_dense = layers.Dense(vocab_size, activation='softmax')
 
         decoder_outputs2, state_h2, state_c2 = decoder_lstm(final_dex2, initial_state=decoder_states_inputs)
         decoder_states2 = [state_h2, state_c2]
         decoder_outputs2 = decoder_dense(decoder_outputs2)
-        self.decoder_model = Model([decoder_inputs] + decoder_states_inputs, [decoder_outputs2] + decoder_states2)
+        self.decoder_model = keras.Sequential([decoder_inputs] + decoder_states_inputs, [decoder_outputs2] + decoder_states2)
 
     def compile(self):
         self.model.compile(optimizer='rmsprop', loss='categorical_crossentropy')

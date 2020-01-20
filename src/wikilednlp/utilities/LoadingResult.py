@@ -1,8 +1,8 @@
 from os import makedirs, path
 
-from wikilednlp.utilities.NumpyHelper import NumpyDynamic
+from ..utilities.NumpyHelper import NumpyDynamic
 
-from wikilednlp.utilities import logger
+from ..utilities import logger
 import numpy as np
 from pathlib2 import Path
 import pickle

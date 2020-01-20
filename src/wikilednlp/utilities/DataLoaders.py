@@ -2,9 +2,9 @@ import abc
 
 import logging
 
-from wikilednlp.utilities import LoadingResult
-from wikilednlp.utilities.ClassConvertors import ClassConvertor
-from wikilednlp.utilities.FileIterators import ClassDataIterator, SingeDataIterator, SemEvalDataIterator, \
+from ..utilities import LoadingResult
+from ..utilities.ClassConvertors import ClassConvertor
+from ..utilities.FileIterators import ClassDataIterator, SingeDataIterator, SemEvalDataIterator, \
     NullDataIterator
 
 logger = logging.getLogger(__name__)

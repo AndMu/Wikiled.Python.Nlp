@@ -1,7 +1,7 @@
 from sklearn import svm
 import numpy as np
 
-from wikilednlp.learning import logger
+from ..learning import logger
 from sklearn.model_selection import StratifiedKFold, KFold
 
 

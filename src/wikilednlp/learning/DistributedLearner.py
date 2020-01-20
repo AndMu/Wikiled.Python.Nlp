@@ -2,8 +2,8 @@ import warnings
 
 from sklearn.model_selection import train_test_split
 import cntk as C
-import wikilednlp.utilities.Constants as Constants
-from wikilednlp.learning import logger
+from ..learning import logger
+from ..utilities import Constants
 
 
 class DistributedLearner(object):

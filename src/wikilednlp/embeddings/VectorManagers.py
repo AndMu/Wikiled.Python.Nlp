@@ -3,13 +3,13 @@ from enum import Enum
 
 from nltk import PorterStemmer
 
-from wikilednlp.learning import logger
-from wikilednlp.utilities import Constants
+from ..learning import logger
+from ..utilities import Constants
 from os import path
 import numpy as np
 import gensim
 
-from wikilednlp.utilities.TextHelper import TextHelper
+from ..utilities.TextHelper import TextHelper
 
 
 class ManagerType(Enum):
@@ -35,13 +35,17 @@ class BaseVecManager(object):
         self.hash_tags = []
         # prepare embedding matrix
         self.embedding_matrix = np.zeros((total_words + Constants.EMBEDDING_START_INDEX, vector_size))
+        vector_unknown = np.zeros(vector_size)
+        vector_unknown[0] = Constants.UNK_ID
 
         for word in word_vector_table.keys():
             embedding_vector = word_vector_table.get(word)
-            if embedding_vector is not None:
-                # words not found in embedding index will be all-zeros.
-                i = word_index[word]
-                self.embedding_matrix[i] = embedding_vector
+            if embedding_vector is None:
+                # words not found in embedding
+                embedding_vector = vector_unknown
+
+            i = word_index[word]
+            self.embedding_matrix[i] = embedding_vector
 
             if TextHelper.is_emoticon(word):
                 self.emoticons.append(word)
@@ -93,32 +97,48 @@ class WordVecManager(BaseVecManager):
         logger.info('Sorting words')
         sorted_list = sorted(w2vModel.wv.vocab.items(), key=lambda t: t[1].count, reverse=True)[0:vocab_size]
         total_words = len(sorted_list)
-        index = Constants.EMBEDDING_START_INDEX
+
         word_index = {}
         index_word = {}
         word_vector_table = {}
         vectors = []
         vector_size = w2vModel.vector_size
 
+        if Constants.EMBEDDING_START_INDEX <= 0:
+            raise ValueError('Embedding index is too low')
+
+        index = 0
+
+        def add_vector(id, word, word_vector):
+            nonlocal index
+            nonlocal vectors
+            nonlocal word_index
+            nonlocal index_word
+            nonlocal word_vector_table
+
+            word_index[word] = id
+            index_word[id] = word
+            word_vector_table[word] = word_vector
+            vectors.append(word_vector)
+            index += 1
+
+        vector = np.zeros(vector_size)
+        add_vector(Constants.PAD_ID, Constants.PAD, vector)
+
         if Constants.use_special_symbols:
             logger.info('Inserting special Symbols')
 
             vector = np.zeros(vector_size)
             vector[0] = Constants.START_ID
-            word_index[Constants.START] = Constants.START_ID
-            index_word[Constants.START_ID] = Constants.START
-            vectors.append(vector)
-            word_vector_table[Constants.START] = vector
+            add_vector(Constants.START_ID, Constants.START, vector)
 
             vector = np.zeros(vector_size)
             vector[0] = Constants.END_ID
-            word_index[Constants.END] = Constants.END_ID
-            index_word[Constants.END_ID] = Constants.END
-            vectors.append(vector)
-            word_vector_table[Constants.END] = vector
+            add_vector(Constants.END_ID, Constants.END, vector)
 
-            total_words += 2
-            index += 2
+            vector = np.zeros(vector_size)
+            vector[0] = Constants.UNK_ID
+            add_vector(Constants.UNK_ID, Constants.UNK, vector)
 
         for wordKey in sorted_list:
             word = wordKey[0]
@@ -126,11 +146,7 @@ class WordVecManager(BaseVecManager):
                 continue
 
             vector = w2vModel.wv[word]
-            word_index[word] = index
-            index_word[index] = word
-            vectors.append(vector)
-            word_vector_table[word] = vector
-            index += 1
+            add_vector(index, word, vector)
 
         word_vectors = np.array(vectors)
         self.w2vModel = w2vModel
@@ -151,7 +167,7 @@ class WordVecManager(BaseVecManager):
         return gensim.models.Word2Vec.load(file_name)
 
 
-# takes generic embeding class to load vectors
+# takes generic embedding class to load vectors
 class EmbeddingManager(BaseVecManager):
     def __init__(self, embeddings):
         total_words = len(embeddings.vocabulary)

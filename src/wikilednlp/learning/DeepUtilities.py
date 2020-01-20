@@ -1,4 +1,4 @@
-from keras.engine.saving import model_from_json
+from tensorflow_core.python.keras.models import model_from_json
 
 
 def store(model, file_name):

@@ -1,9 +1,9 @@
 import random
 
-from wikilednlp.Discovery.SentimentTable import SentimentTable
-from wikilednlp.utilities.Lexicon import LexiconHelper
+from ..Discovery.SentimentTable import SentimentTable
+from ..utilities.Lexicon import LexiconHelper
 
-from wikilednlp.Discovery import logger
+from ..Discovery import logger
 
 """
 Seed words for propagating polarity scores.

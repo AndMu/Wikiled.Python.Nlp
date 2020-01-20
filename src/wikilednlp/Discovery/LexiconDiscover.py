@@ -1,9 +1,9 @@
-from wikilednlp.Discovery import seeds, logger
-from wikilednlp.Discovery.SentimentClassifierFactory import SentimentClassifier
+from ..Discovery import seeds, logger
+from ..Discovery.SentimentClassifierFactory import SentimentClassifier
 import pandas as pd
 
-from wikilednlp.learning.BasicLearning import LinerClassifier
-from wikilednlp.utilities.Lexicon import LexiconHelper
+from ..learning.BasicLearning import LinerClassifier
+from ..utilities.Lexicon import LexiconHelper
 
 
 class LexiconDiscover(object):

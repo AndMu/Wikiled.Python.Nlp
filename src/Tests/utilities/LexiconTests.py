@@ -18,6 +18,7 @@ class LexiconTests(unittest.TestCase):
         self.assertEqual(3, len(tokens))
 
     def test_review_to_wordlist(self):
+        Constants.use_special_symbols = False
         tokens = self.lexicon.review_to_wordlist('My the sample text')
         self.assertEqual(4, len(tokens))
         self.lexicon.remove_stopwords = True
