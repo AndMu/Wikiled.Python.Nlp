@@ -1,0 +1,5 @@
+pathlib2>=2.3.5
+tensorflow>=2.1.0
+ddt>=1.2.2
+nltk>=3.4.5
+gensim>=3.8.1

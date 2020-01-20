@@ -5,9 +5,9 @@ import numpy as np
 from os import path
 from sklearn import preprocessing
 
-from wikilednlp.utilities.Utilities import Utilities
-from wikilednlp.utilities import Constants
-from wikilednlp.embeddings import logger
+from ..utilities.Utilities import Utilities
+from ..utilities import Constants
+from ..embeddings import logger
 
 
 class Embedding(object):

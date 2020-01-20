@@ -1,6 +1,6 @@
 import numpy as np
-from wikilednlp.utilities import logger
-from wikilednlp.utilities import Utilities
+from ..utilities import logger
+from ..utilities import Utilities
 
 
 class ClassConvertor(object):
