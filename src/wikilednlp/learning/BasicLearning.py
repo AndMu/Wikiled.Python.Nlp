@@ -57,7 +57,7 @@ class LinerClassifier(BaseClassifier):
             {'C': c}
         ]
 
-        clf = sklearn.model_selection.GridSearchCV(svc, param_grid=params, n_jobs=-1)
+        clf = sklearn.model_selection.GridSearchCV(svc, param_grid=params, n_jobs=20, cv=5)
         clf.fit(x, y)
         logger.info("Best parameters found:")
         logger.info(clf.best_score_)

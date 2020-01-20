@@ -16,7 +16,7 @@ class ManagerType(Enum):
         Binary = 1
         TextVectors = 2
         FastText = 3
-        Word2Vec = 3
+        Word2Vec = 4
 
 
 class BaseVecManager(object):
@@ -88,7 +88,7 @@ class WordVecManager(BaseVecManager):
 
     def __init__(self, file_name, model_type=ManagerType.Word2Vec, vocab_size=10000):
         name = path.splitext(path.split(file_name)[-1])[0]
-        self.model_type = model_type.name.lower()
+        self.model_type = model_type
         w2vModel = self.construct(file_name)
         logger.info('Sorting words')
         sorted_list = sorted(w2vModel.wv.vocab.items(), key=lambda t: t[1].count, reverse=True)[0:vocab_size]
