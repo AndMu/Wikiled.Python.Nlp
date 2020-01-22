@@ -69,7 +69,7 @@ class BaseDeepStrategy(ABC):
     def add_output(self, model):
         if self.output_drop_out is not None:
             model = layers.Dropout(self.output_drop_out)(model)
-        output =layers.Dense(self.total_classes, activation='softmax', name='Main_Output')(model)
+        output = layers.Dense(self.total_classes, activation='softmax', name='Main_Output')(model)
         return output
 
     def init_mode(self):
