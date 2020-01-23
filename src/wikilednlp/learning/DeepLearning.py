@@ -6,6 +6,7 @@ from os import path, makedirs
 import numpy as np
 from pathlib2 import Path
 from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.model_selection import train_test_split
 from sklearn.utils import check_array
 
 from ..utilities import Constants
@@ -162,17 +163,26 @@ class BaseDeepStrategy(ABC):
             train_y = train_y.astype('float16')
         self.init_mode()
         Utilities.count_occurences(train_y)
-        train_x, train_y = Utilities.unison_shuffled_copies(train_x, train_y)
+
         train_x = keras.preprocessing.sequence.pad_sequences(train_x, value=Constants.PAD_ID, padding='post',
                                                              maxlen=self.max_length)
+
         if len(train_y.shape) == 1:
             train_y = Utilities.make_dual(train_y, self.total_classes)
+
+        train_x, test_x, train_y, test_y = train_test_split(train_x, train_y, test_size=0.33, shuffle=True)
+
+        # drop remainder - only take amount that fits into batch
+        take_records = len(train_x) % Constants.TRAINING_BATCH
+        train_x = train_x[: len(train_x)-take_records]
+        train_y = train_y[: len(train_y)-take_records]
+
         cbks = None
         if self.early_stop is not None:
             logger.info('Will use early stop with: %i', self.early_stop)
             cbks = [keras.callbacks.EarlyStopping(monitor='val_loss', patience=self.early_stop)]
         self.model.fit(train_x, train_y, batch_size=Constants.TRAINING_BATCH, callbacks=cbks, epochs=self.epochs_number,
-                   validation_split=0.25, shuffle=True)
+                       validation_data=(test_x, test_y))
 
 
 class CnnSentiment(BaseDeepStrategy):
