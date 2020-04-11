@@ -5,6 +5,7 @@ from io import open
 from gensim import utils
 from gensim.models.doc2vec import TaggedDocument
 from ..utilities import logger, Constants
+from smart_open import smart_open
 
 
 class SingleFileLineSentence(object):
@@ -49,7 +50,7 @@ class SingleFileLineSentence(object):
                     yield sentence
         except AttributeError:
             # If it didn't work like a file, use it as a string filename
-            with utils.smart_open(self.source) as fin:
+            with smart_open(self.source) as fin:
                 for line in itertools.islice(fin, self.limit):
                     result = self.lexicon.review_to_sentences(utils.to_unicode(line))
                     for sentence in result:

@@ -44,7 +44,7 @@ def set_fp16():
 
 
 def get_root_by_host():
-    if hostname == 'hp-z8':
+    if hostname.capitalize() == 'Threadripper':
         return 'e:/'
     else:
         return 'd:/'

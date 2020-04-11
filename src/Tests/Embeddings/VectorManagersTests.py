@@ -1,11 +1,11 @@
+import os
 import unittest
 
 from os import path
 
 import numpy as np
 
-from wikilednlp.embeddings.Embedding import MainWord2VecEmbedding
-from wikilednlp.embeddings.VectorManagers import WordVecManager, EmbeddingManager
+from wikilednlp.embeddings.VectorManagers import WordVecManager
 from wikilednlp.utilities import Constants
 
 
@@ -24,11 +24,11 @@ class Word2VecManagerTests(unittest.TestCase):
         padding = self.word2vec_special.word_vector_table[Constants.PAD]
         self.assertEqual(0, padding[0])
         start = self.word2vec_special.word_vector_table[Constants.START]
-        self.assertEqual(1, start[0])
+        self.assertEqual(1, start[Constants.START_ID])
         end = self.word2vec_special.word_vector_table[Constants.END]
-        self.assertEqual(2, end[0])
+        self.assertEqual(1, end[Constants.END_ID])
         unk = self.word2vec_special.word_vector_table[Constants.UNK]
-        self.assertEqual(3, unk[0])
+        self.assertEqual(1, unk[Constants.UNK_ID])
 
     def test_construct(self):
         self.assertEqual(10000, self.word2vec.total_words)
@@ -36,6 +36,15 @@ class Word2VecManagerTests(unittest.TestCase):
         self.assertEqual("SemEval_min2", self.word2vec.name)
         self.assertEqual(500, self.word2vec.vector_size)
         self.assertEqual(0, self.word2vec.embedding_matrix[0][0])
+
+    def test_construct(self):
+        file_name = 'dictionary.dic'
+        if os.path.exists(file_name):
+            os.remove(file_name)
+        self.word2vec.save_dictionary(file_name)
+        with open(file_name) as f:
+            content = f.readlines()
+            self.assertEqual(10002, len(content))
 
     def test_construct_dataset(self):
         result = self.word2vec.construct_dataset(['good', 'bad'])
@@ -47,14 +56,3 @@ class Word2VecManagerTests(unittest.TestCase):
         data = np.array([[1, 0, 3], [10, 20, 30]])
         result = self.word2vec.get_matrix(data)
         self.assertEqual(2, len(result))
-
-
-class EmbeddingManagerTest(unittest.TestCase):
-
-    def test_word2vec_construct(self):
-        embedding = MainWord2VecEmbedding(path.join(Constants.DATASETS, 'word2vec/SemEval_min2.bin'))
-        word2vec = EmbeddingManager(embedding)
-        self.assertEqual(303919, word2vec.total_words)
-        self.assertEqual(303919, len(word2vec.word_vectors))
-        self.assertEqual("Word2Vec", word2vec.name)
-        self.assertEqual(500, word2vec.vector_size)

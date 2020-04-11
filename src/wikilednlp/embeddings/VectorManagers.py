@@ -1,4 +1,5 @@
 import abc
+import csv
 from enum import Enum
 
 from nltk import PorterStemmer
@@ -6,6 +7,7 @@ from nltk import PorterStemmer
 from ..learning import logger
 from ..utilities import Constants
 from os import path
+import io
 import numpy as np
 import gensim
 
@@ -43,6 +45,19 @@ class BaseVecManager(object):
                 self.hash_tags.append(word)
 
         logger.debug("Initialized")
+
+    def save_dictionary(self, file_path):
+        headers = ['Id', 'Word']
+        with open(file_path, 'w') as dictionary_file:
+            writer = csv.DictWriter(dictionary_file, delimiter='\t', lineterminator='\n', fieldnames=headers)
+            writer.writeheader()
+            for key, value in self.word_index.items():
+                writer.writerow(
+                    {
+                        'Id': key,
+                        'Word': value
+                    })
+
 
     def get_matrix(self, data):
         logger.debug("Getting matrix")
@@ -83,16 +98,16 @@ class WordVecManager(BaseVecManager):
     def __init__(self, file_name, model_type=ManagerType.Word2Vec, vocab_size=10000):
         name = path.splitext(path.split(file_name)[-1])[0]
         self.model_type = model_type
-        w2vModel = self.construct(file_name)
+        _w2v_model = self._construct(file_name)
         logger.info('Sorting words')
-        sorted_list = sorted(w2vModel.wv.vocab.items(), key=lambda t: t[1].count, reverse=True)[0:vocab_size]
+        sorted_list = sorted(_w2v_model.wv.vocab.items(), key=lambda t: t[1].count, reverse=True)[0:vocab_size]
         total_words = len(sorted_list)
 
         word_index = {}
         index_word = {}
         word_vector_table = {}
         vectors = []
-        vector_size = w2vModel.vector_size
+        vector_size = _w2v_model.vector_size
 
         if Constants.EMBEDDING_START_INDEX <= 0:
             raise ValueError('Embedding index is too low')
@@ -120,15 +135,15 @@ class WordVecManager(BaseVecManager):
             logger.info('Inserting special Symbols')
 
             vector = np.zeros(vector_size)
-            # vector[0] = Constants.START_ID
+            vector[Constants.START_ID] = 1
             add_vector(Constants.START, vector)
 
             vector = np.zeros(vector_size)
-            # vector[0] = Constants.END_ID
+            vector[Constants.END_ID] = 1
             add_vector(Constants.END, vector)
 
             vector = np.zeros(vector_size)
-            # vector[0] = Constants.UNK_ID
+            vector[Constants.UNK_ID] = 1
             add_vector(Constants.UNK, vector)
 
         for wordKey in sorted_list:
@@ -136,15 +151,20 @@ class WordVecManager(BaseVecManager):
             if len(word) == 0:
                 continue
 
-            vector = w2vModel.wv[word]
+            vector = _w2v_model.wv[word]
             add_vector(word, vector)
 
         word_vectors = np.array(vectors)
-        self.w2vModel = w2vModel
+        self.w2vModel = _w2v_model
         super(WordVecManager, self).__init__(name, total_words, word_index, index_word, word_vector_table, vector_size,
                                              word_vectors)
 
-    def construct(self, file_name):
+    def save_index(self, file_name):
+        with io.open(file_name, 'wt', encoding='utf8') as csv_file:
+            for key, value in self.index_word.items():
+                csv_file.write(f'{key}\t{value}\n')
+
+    def _construct(self, file_name):
         logger.info('Loading Word2Vec...')
         if self.model_type == ManagerType.Binary:
             logger.info('Loading binary version')
