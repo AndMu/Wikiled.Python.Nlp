@@ -48,7 +48,7 @@ class BaseVecManager(object):
 
     def save_dictionary(self, file_path):
         headers = ['Id', 'Word']
-        with open(file_path, 'w') as dictionary_file:
+        with open(file_path, 'w', encoding='utf-8') as dictionary_file:
             writer = csv.DictWriter(dictionary_file, delimiter='\t', lineterminator='\n', fieldnames=headers)
             writer.writeheader()
             for key, value in self.word_index.items():
